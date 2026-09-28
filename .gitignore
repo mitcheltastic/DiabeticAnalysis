@@ -1,0 +1,52 @@
+# ========================
+# Datasets (CSV files)
+# ========================
+*.csv
+
+# ========================
+# Python Virtual Environment
+# ========================
+venv/
+
+# ========================
+# Python bytecode & caches
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+catboost_info/
+
+# ========================
+# Jupyter Notebook checkpoints
+# ========================
+.ipynb_checkpoints/
+
+# ========================
+# IDE / Editor settings
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ========================
+# OS-generated files
+# ========================
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ========================
+# Model outputs & results
+# ========================
+results/
+models/
+*.pkl
+*.joblib
+
+# ========================
+# Logs
+# ========================
+*.log
