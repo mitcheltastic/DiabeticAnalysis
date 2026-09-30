@@ -57,23 +57,26 @@ All generated publication-grade visualizations (300 DPI) are saved in the [`figu
 
 ## 🤖 Prompt for Claude (Copy & Paste to Claude)
 
-If you are using Claude (e.g. Claude 3.7 Sonnet / Opus) to generate PowerPoint slides, Marp markdown, or visual presentation cards, use this prompt:
+If you are using Claude (e.g. Claude 3.7 Sonnet / Opus) to generate your slides, use this prompt:
 
 ```text
 You are an expert academic presentation designer and AI researcher.
 I have a comprehensive research presentation guide below (comprising 12 chronological slides, empirical benchmark results, complete 12-figure mappings, and speaker notes).
 
-Please turn this guide into a professional, publication-ready presentation deck (16:9 widescreen layout).
-Requirements:
-1. THEME & STYLING (STRICT): Use a clean LIGHT BACKGROUND (#FFFFFF / #F8FAFC) with DARK TEXT (#0F172A / #1E293B). DO NOT USE DARK MODE.
-2. Follow the exact 12-slide chronological structure.
-3. For each slide, provide:
-   - Slide Title & Subtitle
-   - Visual Layout Plan (incorporating ALL 12 figures from figures/ via primary images and tabs/sub-views on slides 6, 7, 9, 11)
-   - Concise, scannable bullet points (avoid walls of text)
-   - High-impact stat callout boxes (e.g. "89.61% Holdout Acc", "RLTR Target Leak t = 26.77", "0.88 Cleared")
-   - Bilingual Speaker Notes (English script + Indonesian talking points for presenting directly to Bu Yunen)
-4. Ensure the technical numbers, formulas (HOMA-IR), and model comparisons (0.88 benchmark vs. 0.90 target) are meticulously preserved without rounding errors.
+Please turn this guide into a professional, publication-ready Microsoft PowerPoint presentation deck (16:9 widescreen layout).
+
+CRITICAL REQUIREMENTS:
+1. OUTPUT FORMAT (MANDATORY): Output MUST be a PowerPoint presentation (.pptx), NOT HTML!
+   - Provide the complete, clean, and executable Python script using `python-pptx` that automatically compiles and saves the deck as `Diabetic_Analysis_Presentation_Bu_Yunen.pptx`.
+   - The script must embed the figures from the `figures/` directory onto each corresponding slide, set 16:9 widescreen dimensions (13.333 x 7.5 inches), and attach the bilingual speaker notes directly into the slide notes section.
+2. THEME & COLOR PALETTE (MANDATORY):
+   - Use a clean, modern LIGHT THEME with dark text (pure white #FFFFFF / soft slate #F8FAFC background, and deep charcoal #0F172A / dark slate #1E293B text).
+   - STRICTLY NO DARK MODE / DARK BACKGROUNDS.
+3. STRUCTURE & CONTENT:
+   - Follow the exact 12-slide chronological structure.
+   - For each slide, format concise, scannable bullet points, high-impact stat callout boxes (e.g., "89.61% Holdout Acc", "RLTR Target Leak t = 26.77", "0.88 Cleared"), and embed the mapped figures from `figures/`.
+   - Include bilingual speaker notes (English script + Indonesian talking points for Bu Yunen).
+4. DATA INTEGRITY: Meticulously preserve all statistical values, formulas (HOMA-IR), and benchmark numbers without rounding errors.
 
 Here is the presentation guide:
 [PASTE THIS ENTIRE FILE HERE]
