@@ -99,7 +99,7 @@ p.font.size = Pt(12)
 p.font.color.rgb = PRIMARY_BLUE
 
 p = tf_b.add_paragraph()
-p.text = "• Cleared Upperclassmen Benchmark: 89.61% Holdout Accuracy & 0.8519 F1-Score (clearing prior 0.8800 peak by +1.61 pp).\n• Audited Datasets: Caught 5 un-imputed Glucose zeros & mathematically uncovered RLTR target leakage (t = 26.77)."
+p.text = "• Cleared Upperclassmen Benchmark: 89.61% Holdout Accuracy & 0.8491 F1-Score (clearing prior 0.8800 peak by +1.61 pp).\n• Audited Datasets: Caught 5 un-imputed Glucose zeros & mathematically uncovered RLTR target leakage (t = 26.77)."
 p.font.size = Pt(11)
 p.font.color.rgb = TEXT_DARK
 
@@ -526,7 +526,7 @@ p.font.color.rgb = PRIMARY_BLUE
 bullets_10 = [
     "Optuna Bayesian Tuning: 180 trials tuning depth, learning rates, and L2 regularization to prevent overfitting on N=768.",
     "Consensus Soft-Voting Weights:\n  P = 0.35*CatBoost + 0.25*LightGBM + 0.20*XGBoost + 0.20*RandomForest",
-    "Fold Distribution (Boxplot):\n  - Mean 10-Fold CV: 0.8528\n  - Peak Single Fold: 0.9481 (73/77)\n  - Tight interquartile range proves stability across all patient subgroups."
+    "Fold Distribution (Boxplot Fig 05):\n  - 4 top model medians: 0.831 to 0.850\n  - Peak Single Fold: 0.9481 (73/77)\n  - Consensus Ensemble 10-Fold CV Mean: 0.8528"
 ]
 for b in bullets_10:
     p = tf10.add_paragraph()
@@ -535,10 +535,10 @@ for b in bullets_10:
     p.font.color.rgb = TEXT_DARK
 
 s10.notes_slide.notes_text_frame.text = (
-    "[ENGLISH] Slide 10 details our Bayesian hyperparameter tuning and ensemble weighting. The boxplot in Figure 05 shows that fold scores center above 85%, "
-    "with individual folds reaching up to 94.81% accuracy, confirming that the consensus ensemble generalizes cleanly across subgroups.\n\n"
-    "[INDONESIAN] Di Slide 10 kami menyajikan tuning Bayesian Optuna dan pembobotan Consensus Ensemble. Boxplot Gambar 05 membuktikan skor tiap fold konsisten di atas 85%, "
-    "dengan fold terbaik mencapai 94.81%, menandakan kestabilan model yang tinggi."
+    "[ENGLISH] Slide 10 details our Bayesian hyperparameter tuning and ensemble weighting. The boxplot in Figure 05 shows the fold-by-fold stability across the 4 top individual model configurations "
+    "(medians between 0.83 and 0.85, peak single fold 94.81%), confirming reproducible diagnostic accuracy across patient subgroups.\n\n"
+    "[INDONESIAN] Di Slide 10 kami menyajikan tuning Bayesian Optuna dan pembobotan Consensus Ensemble. Boxplot Gambar 05 memperlihatkan sebaran fold dari 4 model terbaik dengan median antara 0.83 hingga 0.85, "
+    "dengan fold terbaik mencapai 94.81%."
 )
 
 # ==============================================================================
@@ -557,11 +557,11 @@ if os.path.exists(fig12_path):
 
 s11.notes_slide.notes_text_frame.text = (
     "[ENGLISH] Slide 11 addresses our benchmark confrontation and includes the Consensus Confusion Matrix requested by Bu Yunen. On the 154-patient holdout test set, "
-    "our Consensus Ensemble achieved 89.61% accuracy and an F1-score of 0.8519, clearing the 0.88 benchmark. As seen in the confusion matrix (Fig 12), it correctly identified "
-    "93 healthy and 45 diabetic individuals, missing 90% by just a single patient. Our 95% confidence interval spans 83.8% to 93.5%.\n\n"
+    "our Consensus Ensemble achieved 89.61% accuracy and an F1-score of 0.8491, clearing the 0.88 benchmark on this split. As seen in the confusion matrix (Fig 12), it correctly identified "
+    "93 healthy and 45 diabetic individuals, missing 90% by just a single patient. Our 95% confidence interval spans 83.8% to 93.5%, while our 10-fold cross-validation average is 85.28%.\n\n"
     "[INDONESIAN] Di Slide 11 ini, kita sajikan perbandingan benchmark (Gambar 03) dan Confusion Matrix Consensus Ensemble (Gambar 12) sesuai permintaan Bu Yunen. "
-    "Pada data uji holdout 154 pasien, model consensus kita mencetak akurasi 89.61% dan F1-score 0.8519, berhasil melewati benchmark kakak kelas (0.88). "
-    "Model mendiagnosa 93 pasien sehat dan 45 pasien diabetes secara akurat, hanya berjarak 1 pasien saja dari angka 90%."
+    "Pada data uji holdout 154 pasien, model consensus kita mencetak akurasi 89.61% dan F1-score 0.8491, berhasil melewati benchmark kakak kelas (0.88) pada split ini. "
+    "Model mendiagnosa 93 pasien sehat dan 45 pasien diabetes secara akurat, hanya berjarak 1 pasien saja dari angka 90%. Rentang CI 95% kita berada di 83.8% - 93.5%, dengan rerata 10-fold CV di 85.28%."
 )
 
 # ==============================================================================

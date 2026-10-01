@@ -39,7 +39,7 @@ All generated publication-grade visualizations (300 DPI) are saved in the [`figu
 | **Slide 09** | `figures/06_clinical_feature_importance_mutual_info.png` | **Tab 3**: Information-Theoretic Feature Ranking via Mutual Information |
 | **Slide 10** | `figures/05_cv_fold_stability_top_models.png` | **Primary**: Boxplot: Cross-Validation Fold Stability & Distribution of Top Configurations |
 | **Slide 11** | `figures/03_peak_accuracy_per_dataset_vs_benchmarks.png` | **Primary**: Peak Model per Dataset vs. 0.88 Upperclassmen and 0.90 Target Benchmarks |
-| **Slide 11** | `figures/12_consensus_model_confusion_matrix.png` | **Tab 2**: Holdout Confusion Matrix of the Consensus Ensemble (89.61% Acc, F1=0.8519) *(Bu Yunen Request)* |
+| **Slide 11** | `figures/12_consensus_model_confusion_matrix.png` | **Tab 2**: Holdout Confusion Matrix of the Consensus Ensemble (89.61% Acc, F1=0.8491) *(Bu Yunen Request)* |
 | **Slide 11** | `figures/07_champion_model_confusion_matrix.png` | **Alternative**: Champion Soft-Voting Holdout Confusion Matrix |
 
 ---
@@ -236,7 +236,7 @@ Present the core empirical finding: RLTR (Robust Linear Trend Regression) domina
   - Standard linear regression (LTR) and trend regression (TR) are severely compromised by extreme clinical outliers (e.g., insulin $> 600$), whereas RLTR's robust M-estimators prevent outlier leverage from distorting estimated values.
 
 ### 🗣️ Speaker Notes (What to Say)
-> *"This heatmap displays the central empirical finding of our study. Across all 10 classifier architectures, RLTR—Robust Linear Trend Regression—is consistently the winner. While LTR, NSSR, TR, and SIM all hover around 76% to 78%, RLTR jumps directly to 84.89% on CatBoost and 84.50% on LightGBM. The reason is clinical: insulin and skinfold measurements have heavy-tailed distributions. Standard regression tries to fit extreme outliers and distorts the imputed values. RLTR downweights those leverage points, generating imputed values that truly reflect biological normality."*
+> *"This heatmap displays the central empirical finding of our study. Across all 10 classifier architectures, RLTR—Robust Linear Trend Regression—is consistently the winner. While LTR, NSSR, TR, and SIM all hover around 76% to 78%, RLTR jumps directly to 85.02% on CatBoost and 83.46% on LightGBM. The reason is clinical: insulin and skinfold measurements have heavy-tailed distributions. Standard regression tries to fit extreme outliers and distorts the imputed values. RLTR downweights those leverage points, generating imputed values that truly reflect biological normality."*
 
 ---
 
@@ -264,7 +264,7 @@ Demonstrate that the models achieve outstanding discriminative separation (ROC-A
   - An ROC-AUC of **0.9328 – 0.9367** proves the models correctly rank a randomly selected diabetic patient above a healthy individual in over **93.2% of test cases**.
   - High sensitivity (>85%) is maintained even at strict, low false-positive operating thresholds ($FPR < 0.10$).
 - **Multi-Dataset Robustness (Tab 2 & 3)**:
-  - RLTR consistently produces higher area under the curve across all algorithms, outperforming Raw, LTR, NSSR, SIM, and TR by **+0.07 to +0.10 ROC-AUC**.
+  - RLTR consistently produces higher area under the curve across all algorithms, outperforming Raw, LTR, NSSR, SIM, and TR by **+0.05 to +0.07 ROC-AUC**.
 
 ### 🗣️ Speaker Notes (What to Say)
 | Language | Script / Talking Points |
@@ -352,13 +352,14 @@ Detail the Bayesian hyperparameter optimization (Optuna) and ensemble architectu
 - **Champion Soft-Voting Ensemble**:
   - Blends calibrated probability estimates from 4 diverse architectures:
     $$\hat{P} = 0.35 \cdot P_{\text{CatBoost}} + 0.25 \cdot P_{\text{LightGBM}} + 0.20 \cdot P_{\text{XGBoost}} + 0.20 \cdot P_{\text{RandomForest}}$$
-- **Stability Analysis (Boxplot)**:
-  - Mean 10-Fold CV Accuracy: **`0.8528`** ($\pm 0.038$)
-  - Highest Single Fold Peak: **`0.9481` (94.81%)**
-  - Tight interquartile range proves the ensemble is robust across all data subgroups.
+- **Stability Analysis (Boxplot Fig 05)**:
+  - Tracks cross-validation fold distributions of 4 top individual model configurations (CatBoost, Gradient Boosting, XGBoost +FE, LightGBM +FE).
+  - Medians across the 4 top models span **`0.831` to `0.850`**.
+  - Single fold peaks reach up to **`0.9481` (73/77)** on favorable splits.
+  - Soft-Voting Ensemble consolidates these into a **`0.8528`** 10-Fold CV mean.
 
 ### 🗣️ Speaker Notes (What to Say)
-> *"With RLTR and our top features identified, we ran Bayesian hyperparameter optimization using Optuna to tune tree depths and regularization. Then, to maximize predictive stability, we combined CatBoost, LightGBM, XGBoost, and Random Forest into a weighted Soft-Voting Ensemble. As seen in the boxplot, the ensemble's fold scores consistently center above 85%, and several folds reach up to 94.81% accuracy, confirming that the ensemble generalizes cleanly without variance spikes."*
+> *"With RLTR and our top features identified, we ran Bayesian hyperparameter optimization using Optuna to tune tree depths and regularization, combining CatBoost, LightGBM, XGBoost, and Random Forest into a weighted Soft-Voting Ensemble. In Figure 05, the boxplot tracks the fold-by-fold stability across the top four individual model configurations, showing medians between 0.83 and 0.85 with individual folds reaching up to 94.81% accuracy, confirming that high diagnostic accuracy is reproducible across patient subgroups."*
 
 ---
 
@@ -377,14 +378,15 @@ Compare our results against the previous upperclassmen benchmark (**0.8800**), e
   - **Upperclassmen Prior Peak**: **`0.8800` (88.0%)**
   - **Target Milestone**: **`≥ 0.9000` (90.0%)**
   - **Consensus Ensemble Holdout Accuracy**: **`89.61%` (138 / 154 correct)**
-    - Clears previous upperclassmen benchmark by **+1.61 percentage points**.
+    - On the 154-patient holdout split, accuracy reaches 89.61% (+1.61 percentage points above 0.88).
     - Missed the 90.00% target by literally **ONE single patient** (139/154 would be 90.26%).
-    - **95% Confidence Interval**: **`[83.8% – 93.5%]`** (comfortably spans the 0.90 goal).
+    - **95% Confidence Interval**: **`[83.8% – 93.5%]`** (comfortably spans both 0.88 and 0.90).
+    - **10-Fold CV Mean Accuracy**: **`0.8528` (85.28%)** — cross-validated average across folds.
   - **Single 10-Fold CV Validation Folds**: Peak folds reached up to **`94.81%`** (73/77).
 - **Consensus Confusion Matrix Diagnostics (Figure 12)**:
-  - **High Specificity**: **`93.0%`** (93 out of 100 healthy patients correctly classified).
-  - **High Sensitivity / Recall**: **`83.3%`** (45 out of 54 diabetic patients diagnosed).
-  - **Holdout F1-Score**: **`0.8519`** (harmonic balance between precision and recall).
+  - **High Specificity**: **`93.0%`** (93 out of 100 healthy patients correctly classified, only 7 false positives).
+  - **High Sensitivity / Recall**: **`83.3%`** (45 out of 54 diabetic patients diagnosed, 9 false negatives).
+  - **Holdout F1-Score**: **`0.8491`** (from matrix: TP=45, FP=7, FN=9; distinguishes from baseline Fig 07 at 0.8519).
   - **Holdout ROC-AUC**: **`0.9328`** (robust clinical separation).
 - **Key Question for Bu Yunen**:
   - *"Did the previous upperclassmen who achieved 0.88 use `RLTR_Imputed.csv`? If so, their 0.88 was likely driven by the same target correlation we identified in our audit."*
@@ -392,8 +394,8 @@ Compare our results against the previous upperclassmen benchmark (**0.8800**), e
 ### 🗣️ Speaker Notes (What to Say)
 | Language | Script / Talking Points |
 |---|---|
-| **English** | *"Slide 11 addresses our benchmark confrontation and includes the Consensus Confusion Matrix requested by Bu Yunen. On the 154-patient holdout test set, our Consensus Ensemble achieved 89.61% accuracy and an F1-score of 0.8519, clearing the 0.88 benchmark. As seen in the confusion matrix, it correctly identified 93 healthy and 45 diabetic individuals, missing 90% by just a single patient. Our 95% confidence interval spans 83.8% to 93.5%, proving the model operates right on the 90% frontier."* |
-| **Indonesian** | *"Di Slide 11 ini, kita sajikan perbandingan benchmark dan Confusion Matrix Consensus Ensemble sesuai permintaan Bu Yunen. Pada data uji holdout 154 pasien, model consensus kita mencetak akurasi 89.61% dan F1-score 0.8519, berhasil melewati benchmark kakak kelas (0.88). Di confusion matrix terlihat model mendiagnosa 93 pasien sehat dan 45 pasien diabetes secara akurat, hanya berjarak 1 pasien saja dari angka 90%. Rentang Confidence Interval 95% kita berada di 83.8% - 93.5%."* |
+| **English** | *"Slide 11 addresses our benchmark confrontation and includes the Consensus Confusion Matrix requested by Bu Yunen. On the 154-patient holdout test set, our Consensus Ensemble achieved 89.61% accuracy and an F1-score of 0.8491, clearing the 0.88 benchmark on this split. As seen in the confusion matrix (Fig 12), it correctly identified 93 healthy and 45 diabetic individuals, missing 90% by just a single patient. Our 95% confidence interval spans 83.8% to 93.5%, while our 10-fold cross-validation average across all folds is 85.28%."* |
+| **Indonesian** | *"Di Slide 11 ini, kita sajikan perbandingan benchmark dan Confusion Matrix Consensus Ensemble sesuai permintaan Bu Yunen. Pada data uji holdout 154 pasien, model consensus kita mencetak akurasi 89.61% dan F1-score 0.8491, berada di atas benchmark kakak kelas (0.88) pada split ini. Di confusion matrix (Gbr 12) terlihat model mendiagnosa 93 pasien sehat dan 45 pasien diabetes secara akurat, hanya berjarak 1 pasien saja dari angka 90%. Rentang CI 95% kita di 83.8% - 93.5%, dengan rerata 10-fold CV di 85.28%."* |
 
 ---
 
@@ -406,22 +408,22 @@ Summarize the publishable contributions and propose a clear outline for writing 
 - **Layout**: 3-pillar contribution card layout + proposed paper outline table.
 
 ### 📋 Slide Content (Copy-Paste to Slide)
-- **Pillar 1: Imputation Impact Assessment**:
-  - Proved empirically that Robust Linear Trend Regression (RLTR) is superior to standard OLS, splines, and single imputation for clinical diabetes datasets.
+- **Pillar 1: Imputation Impact Assessment & Audit**:
+  - Systematically evaluated 5 imputation techniques against raw data; documented that while RLTR yields the highest leaderboard scores, our regression audit identified potential target correlation in RLTR insulin values ($t = 26.77$) that requires transparent disclosure.
 - **Pillar 2: Data Audit & Protocol Correction**:
   - Documented the critical "un-imputed glucose zeros" flaw in existing benchmark sets and established the correct domain-cleaning protocol.
-- **Pillar 3: Endocrinological Feature Synergy**:
-  - Demonstrated that HOMA-IR and Glucose-Insulin products provide higher diagnostic mutual information than raw clinical features.
+- **Pillar 3: Endocrinological Feature Synergy & Interpretability**:
+  - Validated clinical relevance of HOMA-IR and Glucose interaction terms via SHAP and mutual information; noted that while +FE provides interpretable risk clusters, cross-validation shows accuracy parity with non-FE baselines without artificial variance spikes.
 - **Proposed Paper Structure**:
   1. *Introduction*: Missing data in metabolic health & PIMA limitations.
-  2. *Dataset & Imputation Analysis*: The mathematical mechanics of LTR vs. RLTR vs. NSSR.
-  3. *Domain Feature Engineering*: HOMA-IR, risk scores, and mutual information ranking.
+  2. *Dataset & Imputation Analysis*: The mathematical mechanics of LTR vs. RLTR vs. NSSR, plus audit findings.
+  3. *Domain Feature Engineering*: HOMA-IR, risk scores, and SHAP explainability.
   4. *Experiments & Results*: 10-Fold CV benchmarking, ROC-AUC comparisons, and ablation study.
   5. *Discussion & Conclusion*: Clinical implications for automated early-stage diabetes screening.
 - **Repository Ready**: All code, reproducible pipeline (`pipeline.py`), interactive notebook (`diabetes_analysis.ipynb`), and publication figures (`figures/`) are version-controlled and pushed to GitHub.
 
 ### 🗣️ Speaker Notes (What to Say)
-> *"To conclude, we have all the ingredients for a high-impact paper: first, clear empirical proof that robust imputation significantly outperforms standard regression on clinical data; second, our discovery and rectification of the missing glucose values; and third, an endocrinologically motivated feature engineering pipeline that pushed accuracy past 0.90. Everything is fully reproducible in pipeline.py and documented in the Jupyter notebook, and all high-resolution figures are exported. We are ready to draft the manuscript whenever you are ready, Bu."*
+> *"To conclude, we have all the ingredients for a high-impact paper: first, a systematic evaluation of five imputation strategies paired with a thorough data audit; second, the discovery and repair of the un-imputed zero glucose values; and third, an endocrinologically sound feature engineering and SHAP interpretability pipeline. We reach 89.61% accuracy on the holdout split and 85.28% across 10-fold CV. Everything is fully reproducible in pipeline.py and documented in the Jupyter notebook. We are ready to draft the manuscript whenever you are ready, Bu."*
 
 ---
 
