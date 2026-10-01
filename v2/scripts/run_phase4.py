@@ -149,18 +149,42 @@ for cand in candidate_features:
         clf.fit(X_tr_s, y_tr)
         cand_scores.append(clf.score(X_te_s, y_te))
         
+    diffs = np.array(cand_scores) - np.array(baseline_scores)
     m_cand = np.mean(cand_scores)
     s_cand = np.std(cand_scores)
-    delta = m_cand - base_mean
-    # Strict rule: keep only if gain > 1 std (or statistically positive)
-    keep = (delta > 0.005)
-    print(f"Adding {cand:20s}: Mean Acc = {m_cand:.4f} (+/- {s_cand:.4f}), Delta = {delta:+.4f} -> Keep: {keep}")
+    delta = np.mean(diffs)
+    se_delta = np.std(diffs, ddof=1) / np.sqrt(len(diffs))
+    t_crit = stats.t.ppf(0.975, df=len(diffs) - 1)
+    ci_low = delta - t_crit * se_delta
+    ci_high = delta + t_crit * se_delta
+    t_stat = delta / (se_delta + 1e-15)
+    p_val = 2.0 * (1.0 - stats.t.cdf(np.abs(t_stat), df=len(diffs) - 1))
+    
+    # Strict rule: Only call a feature harmful/helpful if the 95% CI excludes 0
+    if ci_low > 0:
+        classification = "Helpful"
+        retained = True
+    elif ci_high < 0:
+        classification = "Harmful"
+        retained = False
+    else:
+        classification = "Neutral (CI spans 0)"
+        retained = False
+        
+    print(f"Adding {cand:20s}: Mean Acc = {m_cand:.4f}, Delta = {delta:+.4f}, 95% CI = [{ci_low:+.4f}, {ci_high:+.4f}] -> {classification}")
     ablation_results.append({
         "Feature_Added": cand,
         "Mean_Accuracy": m_cand,
         "Std_Accuracy": s_cand,
         "Delta_vs_Base": delta,
-        "Retained": keep
+        "SE_Delta": se_delta,
+        "CI_95_Low": ci_low,
+        "CI_95_High": ci_high,
+        "CI_95_Formatted": f"[{ci_low:+.4f}, {ci_high:+.4f}]",
+        "t_stat": t_stat,
+        "p_value": p_val,
+        "Classification": classification,
+        "Retained": retained
     })
 
 pd.DataFrame(ablation_results).to_csv("v2/results/phase4_feature_ablation.csv", index=False)

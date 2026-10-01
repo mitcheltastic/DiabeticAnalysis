@@ -2,6 +2,7 @@
 # Datasets (CSV files)
 # ========================
 *.csv
+!v2/results/*.csv
 
 # ========================
 # Python Virtual Environment
@@ -41,7 +42,7 @@ desktop.ini
 # ========================
 # Model outputs & results
 # ========================
-results/
+/results/
 models/
 *.pkl
 *.joblib

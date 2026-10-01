@@ -1,0 +1,4 @@
+Metric,Observed_Baseline,Honest_RLTR,Provided_RLTR,Verdict
+Theoretical Maximum Linear Correlation (R_max),0.5299326061053925,0.5129118834297649,0.7895157604115455,Violated in Provided RLTR
+Outcome Regression Coefficient (t-stat),-0.44947205367560117,0.0,26.772445452401232,t = 26.77 (p < 1e-75)
+"Partial Correlation r(Insulin, Outcome | Glucose, BMI)",-0.016800850676899712,0.19121020554350956,0.8208090788813912,+0.821 vs -0.024 in Real Data

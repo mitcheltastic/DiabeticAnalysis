@@ -23,7 +23,7 @@ os.makedirs("v2/results", exist_ok=True)
 os.makedirs("v2/figures_v2", exist_ok=True)
 
 print("="*70, flush=True)
-print("PHASE 3: LEAK-FREE IMPUTATION BENCHMARK (OPTIMIZED 50-FOLD REPEATED CV)", flush=True)
+print("PHASE 3: LEAK-FREE IMPUTATION BENCHMARK (50-FOLD REPEATED CV)", flush=True)
 print("="*70, flush=True)
 
 raw = pd.read_csv("Dataset Diabetes.csv", sep=";")
@@ -41,39 +41,68 @@ missing_indicators = (X_raw[missing_cols] == 0).astype(float)
 missing_indicators.columns = [f"{col}_missing" for col in missing_cols]
 
 class HonestRLTRImputer(BaseEstimator, TransformerMixin):
-    def __init__(self, epsilon=0.15):
+    """
+    Leak-free implementation of Robust Linear Tolerant Region (RLTR) Imputation.
+    Operates strictly within training folds without access to test data or target labels.
+    - Matches donors on normalized Glucose (col 1) and BMI (col 5) within Euclidean radius epsilon.
+    - Imputes Insulin (col 4) as the mean of matching donors.
+    - If no donor within epsilon, imputes with training median.
+    - Other missing features are imputed with training medians.
+    """
+    def __init__(self, epsilon=0.25):
         self.epsilon = epsilon
         
     def fit(self, X, y=None):
-        X_df = pd.DataFrame(X).copy()
-        self.medians_ = X_df.median()
-        self.mins_ = X_df.min()
-        self.maxs_ = X_df.max()
-        self.ranges_ = (self.maxs_ - self.mins_).replace(0, 1.0)
-        self.donors_ = X_df.dropna().copy()
+        X_mat = np.array(X, copy=True)
+        self.medians_ = np.nanmedian(X_mat, axis=0)
+        self.mins_ = np.nanmin(X_mat, axis=0)
+        self.maxs_ = np.nanmax(X_mat, axis=0)
+        ranges = self.maxs_ - self.mins_
+        ranges[ranges == 0] = 1.0
+        self.ranges_ = ranges
+        
+        # Donors: rows where Insulin (4), Glucose (1), and BMI (5) are observed
+        valid_donors_mask = ~np.isnan(X_mat[:, 4]) & ~np.isnan(X_mat[:, 1]) & ~np.isnan(X_mat[:, 5])
+        self.donors_mat_ = X_mat[valid_donors_mask].copy()
+        
+        # Fill any other missing features in donors with median
+        for c in range(self.donors_mat_.shape[1]):
+            nan_mask = np.isnan(self.donors_mat_[:, c])
+            self.donors_mat_[nan_mask, c] = self.medians_[c]
+            
         return self
         
     def transform(self, X):
-        X_df = pd.DataFrame(X).copy()
-        for c in X_df.columns:
+        X_mat = np.array(X, copy=True)
+        
+        # Fill non-Insulin missing features with training median
+        for c in range(X_mat.shape[1]):
             if c != 4:
-                X_df[c] = X_df[c].fillna(self.medians_[c])
+                nan_mask = np.isnan(X_mat[:, c])
+                X_mat[nan_mask, c] = self.medians_[c]
                 
-        if 4 in X_df.columns and len(self.donors_) > 0:
-            ins_missing = X_df[4].isna()
-            if ins_missing.any():
-                donor_norm = (self.donors_[[1, 5]] - self.mins_[[1, 5]]) / self.ranges_[[1, 5]]
-                target_norm = (X_df.loc[ins_missing, [1, 5]] - self.mins_[[1, 5]]) / self.ranges_[[1, 5]]
-                
-                for idx, t_row in target_norm.iterrows():
-                    dists = np.sqrt(((donor_norm - t_row)**2).sum(axis=1))
-                    matches = self.donors_.loc[dists <= self.epsilon, 4]
-                    if len(matches) > 0:
-                        X_df.loc[idx, 4] = matches.mean()
-                    else:
-                        X_df.loc[idx, 4] = self.medians_[4]
-                        
-        return X_df.fillna(self.medians_).values
+        # Impute Insulin (col 4) using RLTR donor matching
+        ins_missing = np.isnan(X_mat[:, 4])
+        if np.any(ins_missing) and len(self.donors_mat_) > 0:
+            donor_norm = (self.donors_mat_[:, [1, 5]] - self.mins_[[1, 5]]) / self.ranges_[[1, 5]]
+            target_norm = (X_mat[ins_missing][:, [1, 5]] - self.mins_[[1, 5]]) / self.ranges_[[1, 5]]
+            
+            missing_indices = np.where(ins_missing)[0]
+            for i, target_vec in enumerate(target_norm):
+                dists = np.sqrt(np.sum((donor_norm - target_vec)**2, axis=1))
+                matches = self.donors_mat_[dists <= self.epsilon, 4]
+                row_idx = missing_indices[i]
+                if len(matches) > 0:
+                    X_mat[row_idx, 4] = np.mean(matches)
+                else:
+                    X_mat[row_idx, 4] = self.medians_[4]
+                    
+        # Final fallback for any remaining NaNs
+        for c in range(X_mat.shape[1]):
+            nan_mask = np.isnan(X_mat[:, c])
+            X_mat[nan_mask, c] = self.medians_[c]
+            
+        return X_mat
 
 imputers = {
     "Median": SimpleImputer(strategy="median"),
@@ -81,7 +110,7 @@ imputers = {
     "KNN (k=5)": KNNImputer(n_neighbors=5),
     "MICE (BayesianRidge)": IterativeImputer(estimator=BayesianRidge(), max_iter=10, random_state=42),
     "MissForest (ExtraTrees)": IterativeImputer(estimator=ExtraTreesRegressor(n_estimators=15, random_state=42, n_jobs=-1), max_iter=3, random_state=42),
-    "Honest RLTR (eps=0.15)": HonestRLTRImputer(epsilon=0.15)
+    "Honest RLTR": HonestRLTRImputer(epsilon=0.25)
 }
 
 classifiers = {
@@ -107,7 +136,6 @@ for imp_name, imputer in imputers.items():
     t_imp = time.time()
     print(f"\nProcessing Imputer: {imp_name}...", flush=True)
     
-    # Precompute imputed folds for both With_Indicator=False and True
     imputed_folds = []
     for tr_idx, te_idx in fold_indices:
         X_tr = X_nan.iloc[tr_idx].copy()
@@ -185,30 +213,76 @@ df_res = pd.DataFrame(records)
 df_res.to_csv("v2/results/imputer_benchmark.csv", index=False)
 print(f"\n[OK] Imputer benchmark completed in {time.time() - t_start:.1f}s!", flush=True)
 
-# Paired Wilcoxon tests vs Median Baseline on CatBoost
-print("\n--- PAIRED STATISTICAL TESTS vs MEDIAN IMPUTER ---", flush=True)
+# -------------------------------------------------------------------------
+# NADEAU-BENGIO CORRECTED RESAMPLED T-TEST (HOLM-BONFERRONI CORRECTED)
+# -------------------------------------------------------------------------
+print("\n" + "="*70, flush=True)
+print("NADEAU-BENGIO CORRECTED RESAMPLED T-TEST vs MEDIAN BASELINE (CATBOOST)", flush=True)
+print("="*70, flush=True)
+
+def nadeau_bengio_ttest(d, n_splits=10):
+    """
+    Nadeau-Bengio (2003) corrected resampled t-test for repeated K-fold CV.
+    Corrects variance underestimation caused by overlapping training folds.
+    n_splits: number of folds per repeat (here 10).
+    test/train ratio = (1 / n_splits) / ((n_splits - 1) / n_splits) = 1 / (n_splits - 1) = 1/9.
+    """
+    n = len(d)
+    k_ratio = (1.0 / n_splits) / ((n_splits - 1.0) / n_splits) # 1/9
+    s2 = np.var(d, ddof=1)
+    se_c = np.sqrt((1.0 / n + k_ratio) * s2)
+    mean_d = np.mean(d)
+    t_stat = mean_d / (se_c + 1e-15)
+    df = n - 1
+    p_val = 2.0 * (1.0 - stats.t.cdf(np.abs(t_stat), df=df))
+    t_crit = stats.t.ppf(0.975, df=df)
+    ci_low = mean_d - t_crit * se_c
+    ci_high = mean_d + t_crit * se_c
+    return mean_d, se_c, ci_low, ci_high, t_stat, p_val
+
 stat_tests = []
-median_scores = fold_scores_tracker[("Median", "CatBoost", False)]
+median_scores = np.array(fold_scores_tracker[("Median", "CatBoost", False)])
 
 for imp_name in imputers:
     if imp_name == "Median":
         continue
-    comp_scores = fold_scores_tracker[(imp_name, "CatBoost", False)]
-    stat, pval = stats.wilcoxon(comp_scores, median_scores)
-    mean_diff = np.mean(comp_scores) - np.mean(median_scores)
+    comp_scores = np.array(fold_scores_tracker[(imp_name, "CatBoost", False)])
+    d = comp_scores - median_scores
+    
+    mean_d, se_c, ci_low, ci_high, t_stat, p_val = nadeau_bengio_ttest(d, n_splits=10)
+    
     stat_tests.append({
-        "Comparison": f"{imp_name} vs Median (CatBoost)",
-        "Mean_Diff_Acc": mean_diff,
-        "Wilcoxon_W": stat,
-        "p_value": pval
+        "Comparison": f"{imp_name} vs Median",
+        "Classifier": "CatBoost",
+        "Mean_Diff": mean_d,
+        "SE_Corrected": se_c,
+        "CI_95_Low": ci_low,
+        "CI_95_High": ci_high,
+        "CI_95_Formatted": f"[{ci_low:+.4f}, {ci_high:+.4f}]",
+        "t_stat": t_stat,
+        "df": len(d) - 1,
+        "p_value_uncorrected": p_val
     })
 
 stat_df = pd.DataFrame(stat_tests)
-stat_df = stat_df.sort_values("p_value").reset_index(drop=True)
-stat_df["Holm_Threshold"] = 0.05 / (len(stat_df) - stat_df.index)
-stat_df["Significant_After_Holm"] = stat_df["p_value"] < stat_df["Holm_Threshold"]
+stat_df = stat_df.sort_values("p_value_uncorrected").reset_index(drop=True)
+
+# Holm-Bonferroni correction
+m = len(stat_df)
+stat_df["Holm_Threshold"] = 0.05 / (m - stat_df.index)
+stat_df["Holm_Adjusted_p"] = np.minimum(1.0, np.maximum.accumulate(stat_df["p_value_uncorrected"] * (m - stat_df.index)))
+stat_df["Significant_Holm"] = stat_df["p_value_uncorrected"] < stat_df["Holm_Threshold"]
+
 stat_df.to_csv("v2/results/phase3_imputer_statistical_tests.csv", index=False)
-print(stat_df.to_string(), flush=True)
+print(stat_df[["Comparison", "Mean_Diff", "CI_95_Formatted", "t_stat", "p_value_uncorrected", "Holm_Adjusted_p", "Significant_Holm"]].to_string(index=False), flush=True)
+
+# Also compute Nadeau-Bengio test across Logistic Regression to confirm Honest RLTR != Median
+print("\n--- NADEAU-BENGIO TEST: LOGISTIC REGRESSION (HONEST RLTR vs MEDIAN) ---", flush=True)
+med_lr = np.array(fold_scores_tracker[("Median", "Logistic Regression", False)])
+rltr_lr = np.array(fold_scores_tracker[("Honest RLTR", "Logistic Regression", False)])
+d_lr = rltr_lr - med_lr
+mean_lr_d, se_lr_c, ci_lr_low, ci_lr_high, t_lr_stat, p_lr_val = nadeau_bengio_ttest(d_lr, n_splits=10)
+print(f"Honest RLTR vs Median on LR: Mean Diff = {mean_lr_d:+.4f}, 95% CI = [{ci_lr_low:+.4f}, {ci_lr_high:+.4f}], t = {t_lr_stat:.3f}, p = {p_lr_val:.4f}")
 
 # Heatmap Figure A1 (300 DPI, Light Publication Theme)
 pivot_acc = df_res[df_res["With_Missing_Indicator"] == False].pivot(
