@@ -1,7 +1,7 @@
 # Defensible Machine Learning for Early Diabetes Diagnosis: Leak-Free PIMA Benchmark & Target Leakage Audit
 
-**Project**: Academic Research Paper Preparation with Bu Yunen  
-**Auditor / Investigator**: Independent Research Pipeline  
+**Project**: Academic Research Paper Preparation with Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.  
+**Student / Investigator**: Mitchel Mohamad Affandi  
 **Date**: October 2026 (Patch v2 Applied)  
 **Execution Environment**: Python 3.12 (scikit-learn, XGBoost, CatBoost, LightGBM, Statsmodels, SciPy, SHAP)  
 **Mandate**: Maximum Defensibility — every number must withstand rigorous scrutiny without data leakage.

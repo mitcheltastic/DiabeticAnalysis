@@ -2,14 +2,14 @@
 ### *Benchmarking Imputation Paradigms & Exposing Class-Conditional Target Leakage in the PIMA Cohort*
 
 > **Academic Research & Journal Preparation**  
-> **Researcher**: Mitchel Mohamad  
-> **Advisor**: Bu Yunen  
+> **Peneliti / Mahasiswa**: Mitchel Mohamad Affandi  
+> **Dosen Pembimbing**: Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.  
 > **Repository Status**: Final & Synchronized with v2 Defensibility Audit (October 2026)  
 > **Core Mandate**: Maximum Defensibility — Every metric, test, and claim is mathematically audited, leak-free, and publication-ready.
 
 ---
 
-## ⚡ Quick Navigation / Dokumen Utama untuk Bu Yunen
+## ⚡ Quick Navigation / Dokumen Utama untuk Ibu Pembimbing
 
 | Dokumen | Format | Deskripsi & Tujuan |
 |---|:---:|---|
@@ -68,8 +68,8 @@ Seluruh gambar resolusi tinggi (300 DPI) telah dihasilkan dan tersimpan di repos
 | Gambar | Lokasi File | Deskripsi & Peran dalam Naskah |
 |---|---|---|
 | **Exhibit A** | `v2/figures_v2/A1_imputer_x_model.png` | Matrix 50-Fold CV: Metode Imputasi × Model Klasifikasi (Leak-Free) |
-| **Exhibit B** | `figures/09_multi_model_roc_curves_with_consensus.png` | Kurva ROC-AUC Multi-Model & Consensus Ensemble *(Permintaan Bu Yunen)* |
-| **Exhibit C** | `figures/12_consensus_model_confusion_matrix.png` | Confusion Matrix Model Consensus pada Holdout Split *(Permintaan Bu Yunen)* |
+| **Exhibit B** | `figures/09_multi_model_roc_curves_with_consensus.png` | Kurva ROC-AUC Multi-Model & Consensus Ensemble *(Permintaan Dosen Pembimbing)* |
+| **Exhibit C** | `figures/12_consensus_model_confusion_matrix.png` | Confusion Matrix Model Consensus pada Holdout Split *(Permintaan Dosen Pembimbing)* |
 | **Exhibit D** | `v2/figures_v2/A3_leak_free_shap_ranking.png` | Ranking Fitur Global SHAP Murni Leak-Free (Glukosa #1) |
 | **Exhibit E** | `v2/figures_v2/A2_threshold_tradeoff_curve.png` | Kurva Tradeoff Threshold Skrining Klinis (Sensitivitas $79.85\%$ pada ambang $0.37$) |
 | **Exhibit F** | `v2/figures_v2/A4_partial_dependence_profiles.png` | Profil Partial Dependence untuk Glukosa, BMI, Age, dan Insulin |
@@ -129,4 +129,4 @@ Seluruh skrip berjalan langsung menggunakan virtual environment yang tersedia:
 
 ## 🎓 Kesiapan untuk Sidang & Publikasi Jurnal
 
-Repositori ini siap diajukan untuk bimbingan skripsi / tugas akhir bersama **Bu Yunen** maupun penyusunan naskah jurnal internasional (Q1/Q2 Medical Informatics). Temuan audit target leakage dan perbaikan higienitas data merupakan kontribusi langka yang memberikan nilai akademis tinggi bagi karya ilmiah ini.
+Repositori ini siap diajukan untuk bimbingan skripsi / tugas akhir bersama **Ibu Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.** maupun penyusunan naskah jurnal internasional (Q1/Q2 Medical Informatics). Temuan audit target leakage dan perbaikan higienitas data merupakan kontribusi langka yang memberikan nilai akademis tinggi bagi karya ilmiah ini.

@@ -1,7 +1,7 @@
 # 📊 Comprehensive Research Presentation Guide & Slide Deck Companion
 ### *Defensible Machine Learning for Early Diabetes Screening: Benchmarking Imputation Paradigms & Auditing Target Leakage in the PIMA Cohort*
 
-> **Document Purpose**: This guide provides a slide-by-slide script, layout architecture, visual mappings, speaker notes, and lecturer defense strategies for reporting research findings to **Bu Yunen**. It synthesizes both the exploratory pipeline and the rigorous v2 audit to present a publishable, methodologically bulletproof thesis.
+> **Document Purpose**: This guide provides a slide-by-slide script, layout architecture, visual mappings, speaker notes, and lecturer defense strategies for reporting research findings to **Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.** (Ibu Dr. Yunendah). It synthesizes both the exploratory pipeline and the rigorous v2 audit to present a publishable, methodologically bulletproof thesis.
 >
 > **Optimized for Gemini AI Pro**: Designed for direct input into Gemini AI Pro to generate publication-grade slide decks, Google Slides, or executable `python-pptx` generation scripts.
 
@@ -19,7 +19,7 @@ Slide 06: Phase 2 — The Forensic Audit: Mathematical Proof of Target Leakage i
 Slide 07: Phase 3 — Leak-Free Imputation Benchmark & Nadeau-Bengio Statistical Testing
 Slide 08: Phase 4 — Feature Ablation, Model Diversity & Operating Threshold Optimization
 Slide 09: Phase 5 — Restoring Biological Reality: Rank-Only SHAP Explainability & PDP
-Slide 10: Multi-Model ROC-AUC & Consensus Landscape (Bu Yunen Request)
+Slide 10: Multi-Model ROC-AUC & Consensus Landscape (Dosen Pembimbing Request)
 Slide 11: Phase 6 — Final Benchmark Confrontation & Confusion Matrix Diagnostics
 Slide 12: Synthesis of Scientific Contributions & Roadmap for the Paper
 ```
@@ -39,13 +39,13 @@ All high-resolution figures are saved across [`figures/`](file:///d:/1.%20COLLEG
 | **Slide 08** | `figures/05_cv_fold_stability_top_models.png` | **Supporting**: Boxplot: Cross-Validation Fold Stability & Distribution of Top Configurations |
 | **Slide 09** | `v2/figures_v2/A3_leak_free_shap_ranking.png` | **Primary (Leak-Free)**: Honest Global SHAP Feature Importance Ranking (Glucose #1) |
 | **Slide 09** | `v2/figures_v2/A4_partial_dependence_profiles.png` | **Primary (Clinical)**: Partial Dependence Profiles for Top Biomarkers |
-| **Slide 09** | `figures/10_shap_feature_importance_ranking.png` | **Contrast (Leaked)**: Preliminary SHAP Ranking on Leaked RLTR (Insulin #1) *(Bu Yunen Request)* |
-| **Slide 09** | `figures/11_shap_beeswarm_plot.png` | **Contrast (Clinical)**: SHAP Beeswarm Summary Plot showing directionality *(Bu Yunen Request)* |
+| **Slide 09** | `figures/10_shap_feature_importance_ranking.png` | **Contrast (Leaked)**: Preliminary SHAP Ranking on Leaked RLTR (Insulin #1) *(Permintaan Pembimbing)* |
+| **Slide 09** | `figures/11_shap_beeswarm_plot.png` | **Contrast (Clinical)**: SHAP Beeswarm Summary Plot showing directionality *(Permintaan Pembimbing)* |
 | **Slide 09** | `figures/06_clinical_feature_importance_mutual_info.png` | **Supporting**: Information-Theoretic Feature Ranking via Mutual Information |
-| **Slide 10** | `figures/09_multi_model_roc_curves_with_consensus.png` | **Primary**: Multi-Model ROC Curves: 6 Classifiers vs Consensus Ensemble *(Bu Yunen Request)* |
+| **Slide 10** | `figures/09_multi_model_roc_curves_with_consensus.png` | **Primary**: Multi-Model ROC Curves: 6 Classifiers vs Consensus Ensemble *(Permintaan Pembimbing)* |
 | **Slide 10** | `figures/02_roc_auc_heatmap_all_models_datasets.png` | **Supporting**: Dataset-wide ROC-AUC Matrix Across All Configurations |
 | **Slide 10** | `figures/08_f1_score_heatmap_baseline.png` | **Supporting**: Baseline F1-Score Heatmap across All Models & Datasets |
-| **Slide 11** | `figures/12_consensus_model_confusion_matrix.png` | **Primary (Ensemble Split)**: Consensus Ensemble Confusion Matrix (TN=93, FP=7, FN=9, TP=45) *(Bu Yunen Request)* |
+| **Slide 11** | `figures/12_consensus_model_confusion_matrix.png` | **Primary (Ensemble Split)**: Consensus Ensemble Confusion Matrix (TN=93, FP=7, FN=9, TP=45) *(Permintaan Pembimbing)* |
 | **Slide 11** | `figures/07_champion_model_confusion_matrix.png` | **Supporting**: Baseline Champion Soft-Voting Holdout Confusion Matrix |
 | **Slide 11** | `figures/03_peak_accuracy_per_dataset_vs_benchmarks.png` | **Context**: Peak Model per Dataset vs Historical Upperclassmen Target Benchmarks |
 
@@ -60,15 +60,15 @@ You are an expert academic presentation designer and medical machine learning re
 I need you to generate a comprehensive, publication-ready academic presentation deck (12 widescreen 16:9 slides) based on the detailed research guide provided below.
 
 CONTEXT & AUDIENCE:
-This presentation is prepared for my research advisor, Bu Yunen, and an academic thesis examination committee. The research benchmarks 6 imputation methods on the PIMA Indians Diabetes Database, replicates an upperclassmen baseline, uncovers mathematical evidence of target leakage in a widely used imputed dataset, and establishes a rigorous, leak-free machine learning benchmark.
+This presentation is prepared for my research advisor, Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D., and an academic thesis examination committee. The research benchmarks 6 imputation methods on the PIMA Indians Diabetes Database, replicates an upperclassmen baseline, uncovers mathematical evidence of target leakage in a widely used imputed dataset, and establishes a rigorous, leak-free machine learning benchmark.
 
 OUTPUT REQUIREMENTS:
-1. Format: Generate a complete, standalone Python script using `python-pptx` (or complete slide-by-slide markup ready for presentation) that compiles a 16:9 widescreen deck saved as `Diabetic_Analysis_Presentation_Bu_Yunen.pptx`.
+1. Format: Generate a complete, standalone Python script using `python-pptx` (or complete slide-by-slide markup ready for presentation) that compiles a 16:9 widescreen deck saved as `Diabetic_Analysis_Presentation.pptx`.
 2. Visual Integration: Embed the mapped figures from `figures/` and `v2/figures_v2/` onto their respective slides with appropriate sizing, card containers, and captions.
 3. Content Density & Rigor:
    - For every slide, provide clean, structured content: clear title, subtitle, bulleted takeaways, comparative metric cards, and mathematical formulations.
    - Do NOT omit any numbers or round loosely: replicate exact statistical values, 95% confidence intervals, p-values, t-statistics, and confusion matrix counts.
-4. Speaker Notes: Attach complete bilingual speaker notes (English presentation narrative + Indonesian talking points specifically phrased for presenting to Bu Yunen) to the slide notes section of every slide.
+4. Speaker Notes: Attach complete bilingual speaker notes (English presentation narrative + Indonesian talking points specifically phrased for presenting to Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.) to the slide notes section of every slide.
 5. Scientific Storytelling: Frame the research not as a failed attempt to reach 90%, but as a triumphant methodological audit that replicates the baseline (0.8506), fixes un-imputed glucose zeros, exposes class-conditional target leakage (t=26.77), and establishes the true, defensible state-of-the-art.
 
 Here is the complete Presentation Guide:
@@ -80,10 +80,10 @@ Here is the complete Presentation Guide:
 ## Slide 01: Title & Executive Research Context
 
 ### 🎯 Slide Goal
-Establish the academic context, introduce the research with Bu Yunen, and state the core milestone: an uncompromising, defensible benchmark that replicates prior work, resolves critical clinical missingness bugs, and conducts a rigorous audit of imputation validity.
+Establish the academic context, introduce the research with Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D., and state the core milestone: an uncompromising, defensible benchmark that replicates prior work, resolves critical clinical missingness bugs, and conducts a rigorous audit of imputation validity.
 
 ### 🖼️ Graphic / Visual Layout
-- **Header Badge**: `Academic Thesis & Journal Preparation | Supervised by Bu Yunen`
+- **Header Badge**: `Academic Thesis & Journal Preparation | Supervised by Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.`
 - **Metric Cards (3-Column Stat Row)**:
   - Card 1: **`0.8506`** — Upperclassmen Baseline Replicated to the Exact Patient ($131/154$)
   - Card 2: **`t = 26.77`** — Forensic Audit Proves Class-Conditional Target Leakage in RLTR ($p < 10^{-75}$)
@@ -92,8 +92,8 @@ Establish the academic context, introduce the research with Bu Yunen, and state 
 ### 📋 Slide Content (Copy-Paste to Slide)
 - **Title**: Defensible Machine Learning for Early Diabetes Screening
 - **Subtitle**: Benchmarking Missing-Data Imputation Paradigms & Exposing Class-Conditional Target Leakage in the PIMA Cohort
-- **Researcher**: Mitchel Mohamad
-- **Research Advisor**: Bu Yunen
+- **Researcher / Student**: Mitchel Mohamad Affandi
+- **Research Advisor**: Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.
 - **Core Research Questions**:
   1. *Algorithmic Impact*: How do linear, spline, robust, and multivariate imputation methods affect downstream clinical classification?
   2. *Data Hygiene Audit*: What hidden anomalies exist in standard benchmark datasets, and how do they bias tree-based models?
@@ -107,8 +107,8 @@ Establish the academic context, introduce the research with Bu Yunen, and state 
 ### 🗣️ Speaker Notes (What to Say)
 | Language | Script / Talking Points |
 |---|---|
-| **English** | *"Good morning, Bu Yunen. Today I am presenting our comprehensive study on machine learning for diabetes prediction using the PIMA cohort. While preliminary exploratory experiments showed numbers up to 89.6%, our primary scientific mandate has been absolute defensibility for publication. In this presentation, I will demonstrate how we replicated the upperclassmen baseline of 0.8506 to the exact patient, discovered an un-imputed glucose zeros flaw, mathematically proved that RLTR's performance leap is driven by class-conditional target leakage, and established the true, leak-free benchmark validated by Nadeau-Bengio corrected resampled t-tests."* |
-| **Indonesian** | *"Selamat pagi Bu Yunen. Hari ini saya mempresentasikan hasil penelitian komprehensif machine learning untuk prediksi diabetes pada kohort PIMA. Meskipun dalam eksplorasi awal sempat muncul angka hingga 89.6%, fokus utama penelitian kita untuk jurnal adalah defensibility—keabsahan ilmiah yang tidak terbantahkan. Saya akan menunjukkan bagaimana kita berhasil mereplikasi baseline kakak kelas 0.8506 secara presisi hingga satu pasien, menemukan bug 5 glukosa nol yang terlewat, membuktikan secara matematis bahwa lonjakan RLTR disebabkan oleh target leakage, serta menetapkan benchmark leak-free yang teruji secara statistik."* |
+| **English** | *"Good morning, Ibu Dr. Yunendah. Today I am presenting our comprehensive study on machine learning for diabetes prediction using the PIMA cohort. While preliminary exploratory experiments showed numbers up to 89.6%, our primary scientific mandate has been absolute defensibility for publication. In this presentation, I will demonstrate how we replicated the upperclassmen baseline of 0.8506 to the exact patient, discovered an un-imputed glucose zeros flaw, mathematically proved that RLTR's performance leap is driven by class-conditional target leakage, and established the true, leak-free benchmark validated by Nadeau-Bengio corrected resampled t-tests."* |
+| **Indonesian** | *"Selamat pagi Ibu Dr. Yunendah. Hari ini saya mempresentasikan hasil penelitian komprehensif machine learning untuk prediksi diabetes pada kohort PIMA. Meskipun dalam eksplorasi awal sempat muncul angka hingga 89.6%, fokus utama penelitian kita untuk jurnal adalah defensibility—keabsahan ilmiah yang tidak terbantahkan. Saya akan menunjukkan bagaimana kita berhasil mereplikasi baseline kakak kelas 0.8506 secara presisi hingga satu pasien, menemukan bug 5 glukosa nol yang terlewat, membuktikan secara matematis bahwa lonjakan RLTR disebabkan oleh target leakage, serta menetapkan benchmark leak-free yang teruji secara statistik."* |
 
 ---
 
@@ -410,18 +410,18 @@ Deliver the multi-model ROC-AUC comparison requested by Bu Yunen, contrasting in
 ### 🗣️ Speaker Notes (What to Say)
 | Language | Script / Talking Points |
 |---|---|
-| **English** | *"Here is the multi-model ROC curve comparison requested by Bu Yunen, plotting True Positive Rate against False Positive Rate. The bold red curve represents our Consensus Ensemble, achieving an ROC-AUC of 0.9328, alongside CatBoost at 0.9367 and XGBoost at 0.9343 on this split. In clinical screening, this demonstrates outstanding discriminative ranking. Figure 02 and Figure 08 complete the picture with the full dataset heatmaps for ROC-AUC and F1-score, confirming consistent performance across all ten evaluated algorithms."* |
-| **Indonesian** | *"Berikut adalah perbandingan kurva ROC-AUC multi-model yang diminta Bu Yunen, memplot True Positive Rate vs False Positive Rate. Garis merah tebal adalah Consensus Ensemble kita dengan AUC 0.9328, berdampingan dengan CatBoost di 0.9367 dan XGBoost di 0.9343 pada split ini. Gambar 02 dan Gambar 08 melengkapi analisis ini dengan matriks heatmap ROC-AUC dan F1-score di seluruh dataset dan 10 algoritma, menunjukkan konsistensi evaluasi kami secara menyeluruh."* |
+| **English** | *"Here is the multi-model ROC curve comparison requested by Ibu Dr. Yunendah, plotting True Positive Rate against False Positive Rate. The bold red curve represents our Consensus Ensemble, achieving an ROC-AUC of 0.9328, alongside CatBoost at 0.9367 and XGBoost at 0.9343 on this split. In clinical screening, this demonstrates outstanding discriminative ranking. Figure 02 and Figure 08 complete the picture with the full dataset heatmaps for ROC-AUC and F1-score, confirming consistent performance across all ten evaluated algorithms."* |
+| **Indonesian** | *"Berikut adalah perbandingan kurva ROC-AUC multi-model yang diminta Ibu Dr. Yunendah, memplot True Positive Rate vs False Positive Rate. Garis merah tebal adalah Consensus Ensemble kita dengan AUC 0.9328, berdampingan dengan CatBoost di 0.9367 dan XGBoost di 0.9343 pada split ini. Gambar 02 dan Gambar 08 melengkapi analisis ini dengan matriks heatmap ROC-AUC dan F1-score di seluruh dataset dan 10 algoritma, menunjukkan konsistensi evaluasi kami secara menyeluruh."* |
 
 ---
 
 ## Slide 11: Phase 6 — Final Benchmark Confrontation & Confusion Matrix Diagnostics
 
 ### 🎯 Slide Goal
-Present the Consensus Ensemble Confusion Matrix requested by Bu Yunen, transparently contextualize exploratory Seed 12 ($89.61\%$), and report the final frozen leak-free holdout benchmark.
+Present the Consensus Ensemble Confusion Matrix requested by Dosen Pembimbing, transparently contextualize exploratory Seed 12 ($89.61\%$), and report the final frozen leak-free holdout benchmark.
 
 ### 🖼️ Graphic / Visual Layout
-- **Visual Display**: `figures/12_consensus_model_confusion_matrix.png` *(Consensus Ensemble Confusion Matrix — Bu Yunen Request)*
+- **Visual Display**: `figures/12_consensus_model_confusion_matrix.png` *(Consensus Ensemble Confusion Matrix — Permintaan Pembimbing)*
 - **Supporting Visual**: `figures/03_peak_accuracy_per_dataset_vs_benchmarks.png`
 - **Data Table**: Final Holdout Benchmark Confrontation Table (Table 6 from v2 audit).
 
@@ -446,15 +446,15 @@ Present the Consensus Ensemble Confusion Matrix requested by Bu Yunen, transpare
 ### 🗣️ Speaker Notes (What to Say)
 | Language | Script / Talking Points |
 |---|---|
-| **English** | *"Slide 11 delivers the Consensus Ensemble Confusion Matrix requested by Bu Yunen. In Figure 12, on the seed 12 split, our consensus model achieved 89.61% accuracy and an F1-score of 0.8491, correctly diagnosing 93 healthy and 45 diabetic patients—missing 90% by just one patient. However, for true academic integrity, we must disclose that seed 12 was the maximum of an exploratory seed sweep on leaked RLTR. When we evaluate our frozen, leak-free pipeline on the untouched holdout, it achieves 74.68% accuracy and 0.8135 ROC-AUC. The McNemar test yields p = 0.0004, confirming that the performance gap is statistically significant and consistent with target leakage."* |
-| **Indonesian** | *"Slide 11 menampilkan Confusion Matrix Consensus Ensemble sesuai arahan Bu Yunen. Pada Gambar 12 (split seed 12), model consensus mencetak akurasi 89.61% dan F1-score 0.8491, dengan 93 TN dan 45 TP—hanya berselisih 1 pasien dari target 90%. Namun, demi integritas ilmiah tesis, kami mencantumkan konteksnya: angka 89.61% adalah titik maksimum dari exploratory seed sweep pada data RLTR yang bocor. Saat pipeline leak-free dievaluasi pada holdout murni, akurasinya adalah 74.68% dan ROC-AUC 0.8135. Uji McNemar menghasilkan p = 0.0004, membuktikan secara statistik bahwa selisih performa ini konsisten dengan adanya target leakage."* |
+| **English** | *"Slide 11 delivers the Consensus Ensemble Confusion Matrix requested by Ibu Dr. Yunendah. In Figure 12, on the seed 12 split, our consensus model achieved 89.61% accuracy and an F1-score of 0.8491, correctly diagnosing 93 healthy and 45 diabetic patients—missing 90% by just one patient. However, for true academic integrity, we must disclose that seed 12 was the maximum of an exploratory seed sweep on leaked RLTR. When we evaluate our frozen, leak-free pipeline on the untouched holdout, it achieves 74.68% accuracy and 0.8135 ROC-AUC. The McNemar test yields p = 0.0004, confirming that the performance gap is statistically significant and consistent with target leakage."* |
+| **Indonesian** | *"Slide 11 menampilkan Confusion Matrix Consensus Ensemble sesuai arahan Ibu Dr. Yunendah. Pada Gambar 12 (split seed 12), model consensus mencetak akurasi 89.61% dan F1-score 0.8491, dengan 93 TN dan 45 TP—hanya berselisih 1 pasien dari target 90%. Namun, demi integritas ilmiah tesis, kami mencantumkan konteksnya: angka 89.61% adalah titik maksimum dari exploratory seed sweep pada data RLTR yang bocor. Saat pipeline leak-free dievaluasi pada holdout murni, akurasinya adalah 74.68% dan ROC-AUC 0.8135. Uji McNemar menghasilkan p = 0.0004, membuktikan secara statistik bahwa selisih performa ini konsisten dengan adanya target leakage."* |
 
 ---
 
 ## Slide 12: Synthesis of Scientific Contributions & Roadmap for the Paper
 
 ### 🎯 Slide Goal
-Summarize the 4 publishable pillars of the research, demonstrate readiness for journal submission with Bu Yunen, and outline the manuscript structure.
+Summarize the 4 publishable pillars of the research, demonstrate readiness for journal submission with Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D., and outline the manuscript structure.
 
 ### 🖼️ Graphic / Visual Layout
 - **Visual Display**: 4-Pillar Contribution Architecture Cards + Proposed Journal Paper Outline Table.
@@ -466,7 +466,7 @@ Summarize the 4 publishable pillars of the research, demonstrate readiness for j
   2. **Forensic Leakage Proof**: Mathematically proved and experimentally reproduced class-conditional target leakage in `RLTR_Imputed.csv` ($t = 26.77, r = 0.8208$, reproduced $r = 0.7908$).
   3. **Data Audit & Hygiene Protocol**: Discovered and resolved the un-imputed 5 Glucose Zeros flaw common to all benchmark files.
   4. **Defensible Leak-Free Benchmark**: Established the 50-fold repeated CV standard under Nadeau-Bengio corrected resampled t-tests, proving median imputation is an exceptionally robust baseline ($77.3\%$ acc, $0.845$ AUC).
-- **Proposed Paper Outline for Bu Yunen**:
+- **Proposed Paper Outline for Ibu Dr. Yunendah**:
   - *Section 1: Introduction*: Clinical missingness in metabolic screening and PIMA limitations.
   - *Section 2: Forensic Target Leakage Audit*: Mathematical and empirical proof of class-conditional donor matching in published benchmarks.
   - *Section 3: Leak-Free Imputation Benchmarking*: 50-fold repeated CV evaluation across 6 imputers under Nadeau-Bengio statistical testing.
@@ -478,12 +478,12 @@ Summarize the 4 publishable pillars of the research, demonstrate readiness for j
 ### 🗣️ Speaker Notes (What to Say)
 | Language | Script / Talking Points |
 |---|---|
-| **English** | *"To conclude, Bu Yunen, this research provides far more than just a model: it provides a complete, publishable scientific contribution with four pillars. First, exact replication of prior work; second, mathematical proof of target leakage in RLTR that explains previous performance anomalies; third, fixing the un-imputed glucose zeros oversight; and fourth, establishing a rigorous leak-free benchmark validated by Nadeau-Bengio tests. This work protects our academic credibility and provides a novel, publishable angle for an international journal. Everything is version-controlled and fully reproducible. Thank you, and I look forward to your questions."* |
-| **Indonesian** | *"Sebagai penutup, Bu Yunen, penelitian ini menghasilkan kontribusi ilmiah yang sangat solid untuk publikasi jurnal dalam empat pilar: pertama, replikasi presisi baseline sebelumnya; kedua, pembuktian matematis target leakage pada file RLTR; ketiga, perbaikan 5 nilai glukosa nol yang terlewat; dan keempat, penetapan benchmark leak-free dengan uji Nadeau-Bengio. Temuan audit ini justru menjadi nilai jual utama paper kita karena membongkar kelemahan metodologis yang selama ini tidak disadari. Seluruh kode telah rapi dan reproducible. Terima kasih, saya siap berdiskusi."* |
+| **English** | *"To conclude, Ibu Dr. Yunendah, this research provides far more than just a model: it provides a complete, publishable scientific contribution with four pillars. First, exact replication of prior work; second, mathematical proof of target leakage in RLTR that explains previous performance anomalies; third, fixing the un-imputed glucose zeros oversight; and fourth, establishing a rigorous leak-free benchmark validated by Nadeau-Bengio tests. This work protects our academic credibility and provides a novel, publishable angle for an international journal. Everything is version-controlled and fully reproducible. Thank you, and I look forward to your questions."* |
+| **Indonesian** | *"Sebagai penutup, Ibu Dr. Yunendah, penelitian ini menghasilkan kontribusi ilmiah yang sangat solid untuk publikasi jurnal dalam empat pilar: pertama, replikasi presisi baseline sebelumnya; kedua, pembuktian matematis target leakage pada file RLTR; ketiga, perbaikan 5 nilai glukosa nol yang terlewat; dan keempat, penetapan benchmark leak-free dengan uji Nadeau-Bengio. Temuan audit ini justru menjadi nilai jual utama paper kita karena membongkar kelemahan metodologis yang selama ini tidak disadari. Seluruh kode telah rapi dan reproducible. Terima kasih, saya siap berdiskusi."* |
 
 ---
 
-## 🎓 Lecturer Q&A Anticipation & Defense Guide (For Bu Yunen & Examiners)
+## 🎓 Lecturer Q&A Anticipation & Defense Guide (For Examination Committee)
 
 | Possible Examiner / Lecturer Question | Recommended Winning Response |
 |---|---|

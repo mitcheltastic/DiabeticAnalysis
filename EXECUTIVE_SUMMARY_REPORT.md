@@ -1,8 +1,8 @@
 # 📑 Laporan Ringkasan Eksekutif Penelitian
 ## *Analisis Komparatif Imputasi Data Hilang & Audit Forensik Target Leakage pada Prediksi Diabetes (Kohort PIMA)*
 
-> **Penyusun**: Mitchel Mohamad  
-> **Dosen Pembimbing**: Bu Yunen  
+> **Penyusun / Mahasiswa**: Mitchel Mohamad Affandi  
+> **Dosen Pembimbing**: Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.  
 > **Status Dokumen**: Final & Siap Sidang / Publikasi Jurnal  
 > **Tanggal**: Oktober 2026  
 > **Repositori**: `mitcheltastic/DiabeticAnalysis`
@@ -13,7 +13,7 @@
 
 Dalam penelitian *machine learning* di bidang medis, **angka yang lebih rendah namun jujur dan metodologinya benar bernilai seribu kali lebih tinggi daripada angka tinggi yang cacat metodologis**. Angka performa tinggi yang diperoleh dari kebocoran data (*data leakage*) akan langsung gugur saat diuji oleh penguji sidang atau *reviewer* jurnal internasional. Sebaliknya, penelitian yang berhasil mengungkap cacat data, mereplikasi hasil terdahulu, dan menetapkan standar pengujian yang murni (*leak-free*) adalah **kontribusi ilmiah kelas satu**.
 
-Laporan ini merangkum seluruh alur perjalanan penelitian kita bersama Bu Yunen, dari pengujian awal, pembongkaran misteri performa, hingga penetapan hasil akhir yang defensibel:
+Laporan ini merangkum seluruh alur perjalanan penelitian kita bersama Ibu Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D., dari pengujian awal, pembongkaran misteri performa, hingga penetapan hasil akhir yang defensibel:
 
 ```
 [Tahap 1: Replikasi Baseline]       --> Replikasi akurat 0.8506 (90 TN, 10 FP, 13 FN, 41 TP)
@@ -43,8 +43,8 @@ Angka nol pada dataset ini merupakan representasi dari data yang tidak tercatat 
 - **BMI**: 11 pasien (**1.43%**)
 - **Glucose**: 5 pasien (**0.65%**)
 
-### 1.3 Arahan Awal Bu Yunen
-Bu Yunen mengarahkan untuk menguji **5 metode imputasi**:
+### 1.3 Arahan Awal Dosen Pembimbing
+Ibu Dr. Yunendah mengarahkan untuk menguji **5 metode imputasi**:
 1. `LTR` (*Linear Trend at Point Regression*)
 2. `NSSR` (*Non-linear Spline / Semiparametric Regression*)
 3. `RLTR` (*Robust Linear Trend Regression*)
@@ -156,7 +156,7 @@ Kami menguji apakah penambahan fitur klinis kompleks (HOMA-IR, interaksi Glucose
 - Penambahan interaksi lainnya: Seluruh CI 95% mencakup angka nol.
 - **Kesimpulan**: Pohon *gradient boosting* (CatBoost/XGBoost) sudah mampu menangkap interaksi non-linier dari Glukosa dan BMI tanpa perlu rekayasa fitur tambahan. Kami mempertahankan **8 fitur dasar asli** demi kesederhanaan dan ketahanan model.
 
-### 6.2 Restorasi Kebenaran Biologis melalui SHAP (Permintaan Bu Yunen)
+### 6.2 Restorasi Kebenaran Biologis melalui SHAP (Permintaan Dosen Pembimbing)
 Analisis SHAP membuktikan kebenaran biologis kembali tegak setelah kebocoran data dihilangkan:
 
 | Fitur Klinis | Ranking di RLTR Bocor | Ranking di Model Leak-Free | Pergeseran | Penjelasan Medis / Fisiologis |
@@ -192,9 +192,9 @@ Uji statistik McNemar menunjukkan perbedaan yang sangat signifikan secara statis
 
 ---
 
-## 🎓 Bab 8: Empat Pilar Nilai Jual Penelitian untuk Bu Yunen
+## 🎓 Bab 8: Empat Pilar Nilai Jual Penelitian untuk Ibu Pembimbing & Sidang
 
-Jika ditanya Bu Yunen: *"Kenapa hasil ini bagus dan layak untuk Tugas Akhir serta Jurnal?"*
+Jika ditanya Ibu Pembimbing atau dewan penguji sidang: *"Kenapa hasil ini bagus dan layak untuk Tugas Akhir serta Jurnal?"*
 
 Jawabannya adalah **Empat Pilar Kontribusi Ilmiah**:
 
@@ -211,17 +211,17 @@ Jawabannya adalah **Empat Pilar Kontribusi Ilmiah**:
 
 ## 🖼️ Bab 9: Lampiran Galeri Visual Ilmiah Utama (Key Visual Exhibits)
 
-Berikut adalah visualisasi publikasi utama yang disertakan dalam laporan ini dan siap dipresentasikan kepada Bu Yunen:
+Berikut adalah visualisasi publikasi utama yang disertakan dalam laporan ini dan siap dipresentasikan kepada Ibu Dr. Yunendah:
 
 ### Exhibit A: Heatmap Benchmark 50-Fold Repeated CV (Metode Imputasi × Model)
 ![Exhibit A: Heatmap Benchmark 50-Fold Repeated CV](v2/figures_v2/A1_imputer_x_model.png)
 *Memetakan performa 6 metode imputasi pada 50-fold cross-validation murni tanpa kebocoran data.*
 
-### Exhibit B: Kurva ROC-AUC Multi-Model & Consensus Ensemble (Permintaan Bu Yunen)
+### Exhibit B: Kurva ROC-AUC Multi-Model & Consensus Ensemble (Permintaan Dosen Pembimbing)
 ![Exhibit B: Kurva ROC-AUC Multi-Model & Consensus Ensemble](figures/09_multi_model_roc_curves_with_consensus.png)
 *Perbandingan kurva ROC-AUC sensitivitas vs FPR untuk seluruh arsitektur model dan consensus ensemble.*
 
-### Exhibit C: Confusion Matrix Model Consensus pada Holdout Split (Permintaan Bu Yunen)
+### Exhibit C: Confusion Matrix Model Consensus pada Holdout Split (Permintaan Dosen Pembimbing)
 ![Exhibit C: Confusion Matrix Model Consensus](figures/12_consensus_model_confusion_matrix.png)
 *Menampilkan akurasi 89.61% pada split seed 12 (TN=93, FP=7, FN=9, TP=45).*
 
