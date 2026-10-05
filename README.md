@@ -1,231 +1,132 @@
-# 🩺 Diabetic Analysis — Imputation Method Benchmarking & High-Performance Prediction Pipeline
+# 🩺 Defensible Machine Learning for Early Diabetes Screening
+### *Benchmarking Imputation Paradigms & Exposing Class-Conditional Target Leakage in the PIMA Cohort*
 
-> **Research Objective**: Conduct a rigorous comparative evaluation of **5 distinct missing-data imputation methods** (LTR, NSSR, RLTR, SIM, TR) alongside the raw PIMA Indians Diabetes Dataset to determine their impact on classification fidelity, surpass the previous upperclassmen benchmark (**0.8800**), and achieve/exceed the **$\ge 0.9000$ (90.00%) accuracy** research target.
-
----
-
-## 📋 Table of Contents
-
-- [Executive Summary & Key Findings](#-executive-summary--key-findings)
-- [Dataset Architecture & Missingness Analysis](#-dataset-architecture--missingness-analysis)
-- [Critical Discovery: The Glucose Zeros Flaw](#-critical-discovery-the-glucose-zeros-flaw)
-- [Clinical Feature Engineering & Selection](#-clinical-feature-engineering--selection)
-- [Benchmark Results & Comparative Performance](#-benchmark-results--comparative-performance)
-- [Project Architecture](#-project-architecture)
-- [Quickstart & Reproduction Guide](#-quickstart--reproduction-guide)
-- [Jupyter Notebook (`diabetes_analysis.ipynb`)](#-jupyter-notebook)
-- [Scientific Insights for Paper Drafting](#-scientific-insights-for-paper-drafting)
+> **Academic Research & Journal Preparation**  
+> **Researcher**: Mitchel Mohamad  
+> **Advisor**: Bu Yunen  
+> **Repository Status**: Final & Synchronized with v2 Defensibility Audit (October 2026)  
+> **Core Mandate**: Maximum Defensibility — Every metric, test, and claim is mathematically audited, leak-free, and publication-ready.
 
 ---
 
-## 🔬 Executive Summary & Key Findings
+## ⚡ Quick Navigation / Dokumen Utama untuk Bu Yunen
 
-1. **Champion Imputation Strategy Identified**:
-   - **RLTR (Robust Linear Trend Regression)** decisively outperformed all other imputation techniques across all 10 model families.
-   - RLTR provides robust resistance against leverage-point distortion during imputation, yielding up to **+7.5% higher cross-validation accuracy** and **+0.07 higher ROC-AUC** compared to standard linear regression (LTR) and simple statistical imputation (SIM).
-2. **Surpassing the 0.88 Benchmark & Breaking Through $\ge 0.90$**:
-   - **Previous Upperclassmen Work**: Peaked at **0.8800 (88.0%)**.
-   - **Our Tuned Soft-Voting Ensemble (CatBoost + LightGBM + XGBoost + RF)**:
-     - **Stratified 10-Fold CV Mean**: **`0.8528`** (with peak single-fold validation at **`0.9481` / 94.81%** and mean ROC-AUC of **`0.9157`**).
-     - **Stratified Holdout Test Accuracy**: **`0.8961` (89.61%)** to **`0.9481` (94.81%)**, decisively breaking the upperclassmen ceiling and crossing the 0.90 target threshold.
-3. **End-to-End Dual Workflow**:
-   - Automated CLI pipeline: [`pipeline.py`](file:///pipeline.py)
-   - Interactive research notebook: [`diabetes_analysis.ipynb`](file:///diabetes_analysis.ipynb)
+| Dokumen | Format | Deskripsi & Tujuan |
+|---|:---:|---|
+| **[EXECUTIVE_SUMMARY_REPORT.pdf](EXECUTIVE_SUMMARY_REPORT.pdf)** | 📄 PDF | **Laporan Resmi 4 Halaman (Bahasa Indonesia)** lengkap dengan tabel, temuan forensik, dan lampiran visual utama. Sangat disarankan untuk dibaca langsung oleh dosen. |
+| **[EXECUTIVE_SUMMARY_REPORT.md](EXECUTIVE_SUMMARY_REPORT.md)** | 📝 Markdown | Kloning versi teks markdown dari laporan ringkasan eksekutif di atas. |
+| **[PRESENTATION_GUIDE.md](PRESENTATION_GUIDE.md)** | 📊 Slide Deck Guide | Panduan 12 slide lengkap untuk sidang / presentasi bimbingan, dilengkapi prompt Gemini AI Pro dan speaker notes dwi-bahasa. |
+| **[v2/RESULTS.md](v2/RESULTS.md)** | 🔬 Technical Audit | Laporan teknis lengkap seluruh 6 fase audit, pembuktian matematis kebocoran data, dan tabel statistik detail. |
 
 ---
 
-## 📊 Dataset Architecture & Missingness Analysis
+## 🧭 Executive Summary: Empat Temuan Ilmiah Utama
 
-The base cohort originates from the **PIMA Indians Diabetes Database (National Institute of Diabetes and Digestive and Kidney Diseases - NIDDK)**, containing 768 female patients of Pima Indian heritage aged $\ge 21$.
-
-| Metric / Attribute | Value |
-|---|---|
-| **Total Cohort Size ($N$)** | 768 patient records |
-| **Feature Dimensionality** | 8 primary clinical measurements |
-| **Diagnostic Target** | `Outcome` (0 = Healthy / Negative, 1 = Diabetic / Positive) |
-| **Class Distribution** | 500 Healthy (65.1%) vs. 268 Diabetic (34.9%) |
-
-### Features & Natural Missingness Patterns
-
-In human physiology, values of 0 in serum glucose, blood pressure, skinfold thickness, insulin, or BMI are fatal or physically impossible; they represent missing data:
-
-| # | Clinical Measurement | Medical Units | Zeros Count in Raw | Missing Rate (%) |
-|---|---|---|---|---|
-| 1 | `Pregnancies` | Count | 111 | 0.0% (Valid zero) |
-| 2 | `Glucose` | mg/dL (2h OGTT) | 5 | 0.65% |
-| 3 | `BloodPressure` | mm Hg (Diastolic) | 35 | 4.56% |
-| 4 | `SkinThickness` | mm (Triceps fold) | 227 | 29.56% |
-| 5 | `Insulin` | $\mu\text{U/mL}$ (2h serum) | 374 | 48.70% |
-| 6 | `BMI` | $\text{kg/m}^2$ | 11 | 1.43% |
-| 7 | `DiabetesPedigreeFunction` | Score | 0 | 0.0% |
-| 8 | `Age` | Years | 0 | 0.0% |
-
-### Evaluated Imputation Variants
-
-1. **`Dataset Diabetes.csv` (Raw)**: Baseline raw dataset (semicolon-delimited); contains all unhandled zeros.
-2. **`LTR_Imputed.csv` (Linear Trend at Point Regression)**: Imputed via standard OLS regression modeling.
-3. **`NSSR_Imputed.csv` (Non-linear Spline / Semiparametric Regression)**: Imputed via non-linear spline interpolations.
-4. **`RLTR_Imputed.csv` (Robust Linear Trend Regression)**: Imputed using M-estimators/Huber loss to resist heavy-tailed clinical outliers. **(Best Performer)**
-5. **`SIM_Imputed.csv` (Simple / Single Imputation Method)**: Imputed using conditional mean/median measures.
-6. **`TR_Imputed.csv` (Trend Regression)**: Imputed via standard linear trend regression.
-
----
-
-## ⚠️ Critical Discovery: The Glucose Zeros Flaw
-
-During deep exploratory scanning of the files, we uncovered a critical oversight present in **all five external imputed datasets**:
+Dalam penelitian *machine learning* medis, **angka yang lebih rendah namun jujur dan metodologinya benar bernilai seribu kali lebih tinggi daripada angka tinggi semu yang cacat metodologis**. Repositori ini merangkum evolusi dari eksplorasi awal hingga audit forensik menyeluruh:
 
 ```
-Zeros remaining across datasets:
-  - BloodPressure : 0 in all imputed files (Imputed successfully)
-  - SkinThickness : 0 in all imputed files (Imputed successfully)
-  - Insulin       : 0 in all imputed files (Imputed successfully)
-  - BMI           : 0 in all imputed files (Imputed successfully)
-  - Glucose       : 5 zeros REMAIN in EVERY imputed dataset (Rows 75, 182, 342, 349, 502)!
+[Phase 1: Baseline Replication]     --> Replicated exact upperclassmen paper baseline: 0.8506 (90/10/13/41 matrix).
+[Phase 2: Data Hygiene Audit]       --> Discovered & rectified 5 non-physiological Glucose=0 mg/dL across all files.
+[Phase 3: Forensic Leakage Proof]   --> Mathematically proved class-conditional target leakage in RLTR (t=26.77, r=0.79).
+[Phase 4: Leak-Free Benchmark]      --> 50-fold repeated CV under Nadeau-Bengio test (Median imputation is champion).
+[Phase 5: Medical SHAP Restoration] --> Glucose restored to #1, BMI to #3, Insulin drops to true physiological rank.
+[Phase 6: Clinical Screening Opt]   --> Calibrated threshold=0.37 boosts screening sensitivity from 59% to 79.85%.
+[Phase 7: Frozen Untouched Holdout] --> Leak-free holdout: 74.68% (0.8135 AUC), McNemar p=0.0004 consistent with leakage.
 ```
-
-Because **Glucose is the single most predictive biomarker** for diabetes diagnosis ($F\text{-score} = 245.67$), leaving 5 patients with Glucose = 0 introduced severe prediction artifacts. Our pipeline introduces automated rectification (`clean_glucose_zeros`), replacing biologically implausible zeros with the median of non-zero glucose observations, immediately stabilizing gradient trees.
 
 ---
 
-## 🧬 Clinical Feature Engineering & Selection
+## 🔬 Rangkuman 4 Pilar Kontribusi Ilmiah
 
-To capture non-linear metabolic risk without causing high-dimensional variance on $N=768$, we engineered clinical interaction indices based on endocrinological literature:
+### 1. Replikasi Presisi Baseline Kakak Kelas & Klarifikasi Mitos 0.88
+- **Replikasi 100% Presisi**: Menggunakan default XGBoost pada data RLTR (seed 42, 80:20 split), script kami mereplikasi angka paper kakak kelas persis hingga 1 pasien:
+  $$\text{Akurasi} = \mathbf{0.8506} \quad (\mathbf{TN = 90}, \mathbf{FP = 10}, \mathbf{FN = 13}, \mathbf{TP = 41})$$
+- **Klarifikasi Angka 0.88**: Di paper resmi tidak ada angka 0.88. Angka $0.8831$ (atau $0.8961$ pada model consensus) adalah hasil eksplorasi pada split acak tertentu (`seed=12`), dengan margin of error split tunggal mencapai $\pm 5.5\%$. Uji McNemar membuktikan tidak ada perbedaan signifikan antara model paper dan model consensus pada split yang sama ($p = 0.7539$).
 
-1. **HOMA-IR (Homeostatic Model Assessment of Insulin Resistance)**:
-   $$\text{HOMA-IR} = \frac{\text{Glucose} \times \text{Insulin}}{405}$$
-2. **Glucose-to-Insulin Dynamics**:
-   $$\text{Glucose\_Insulin} = \text{Glucose} \times \text{Insulin}, \quad \text{Glucose\_Insulin\_Ratio} = \frac{\text{Glucose}}{\text{Insulin} + 1}$$
-3. **Cardiometabolic Adiposity Indices**:
-   $$\text{Insulin\_BMI} = \text{Insulin} \times \text{BMI}, \quad \text{Glucose\_BMI} = \text{Glucose} \times \text{BMI}, \quad \text{BMI\_Age} = \text{BMI} \times \text{Age}$$
-4. **Genetic Predisposition Interaction**:
-   $$\text{BMI\_DPF} = \text{BMI} \times \text{DiabetesPedigreeFunction}$$
-5. **Composite Metabolic Risk Score**:
-   $$\text{RiskScore} = 2 \cdot \mathbb{I}_{[\text{Glucose} \ge 140]} + \mathbb{I}_{[\text{BMI} \ge 30]} + \mathbb{I}_{[\text{Age} \ge 35]} + \mathbb{I}_{[\text{BP} \ge 80]}$$
+### 2. Temuan Kritis: Bug 5 Glukosa Nol
+- Pada seluruh 5 file imputasi yang beredar (`LTR`, `NSSR`, `RLTR`, `SIM`, `TR`), pihak pembuat mengimputasi insulin dan skinfold, namun **melewatkan 5 pasien dengan glukosa bernilai 0 mg/dL** (Rows 75, 182, 342, 349, 502).
+- Karena glukosa adalah biomarker utama diabetes ($F = 245.67$), angka nol memaksa pasien diabetes masuk ke kelompok sehat pada decision tree (*false negative*). Kami memperbaikinya dengan imputasi median ($117\text{ mg/dL}$).
 
-### Feature Importance Ranking (Mutual Information)
+### 3. Pembuktian Matematis Target Leakage pada File RLTR
+Mengapa file RLTR sempat melonjak ke akurasi $\approx 85\%$ sendirian? Audit kami membuktikan bahwa **label target Outcome terinjeksi ke dalam nilai insulin yang hilang**:
+- **Regresi OLS**: Koefisien `Outcome` pada insulin di data asli tidak signifikan ($\beta = -5.72, t = -0.45, p = 0.653$). Namun di file RLTR melonjak menjadi **$\beta = +28.68\text{ mg/dL}$ ($t = 26.77, p < 10^{-75}$)**.
+- **Korelasi Parsial**: $r(\text{Insulin}, \text{Outcome} \mid \text{Glucose}, \text{BMI})$ di data asli adalah $-0.0168$ ($p = 0.740$), sedangkan di file RLTR melompat ke **$+0.8208$ ($p < 10^{-90}$)**.
+- **Eksperimen Rekonstruksi**: Kami merekonstruksi imputasi dengan membatasi donor pool per kelas target, dan berhasil menghasilkan korelasi **$r = 0.7908$**, cocok persis dengan file aslinya ($r = 0.7895$).
 
-| Feature | Mutual Information Score | Clinical Significance |
+### 4. Benchmark Murni Leak-Free & Uji Statistik Nadeau-Bengio
+Pada pengujian 50-fold cross-validation murni bebas kebocoran:
+- Evaluasi menggunakan **Nadeau-Bengio corrected resampled t-test** dengan koreksi **Holm-Bonferroni** membuktikan bahwa **tidak ada metode imputasi kompleks yang secara signifikan mengungguli imputasi median sederhana** (MissForest $p=0.8751$, MICE $p=1.0000$; semua CI 95% mencakup angka 0).
+- Imputasi median adalah baseline yang sangat tangguh, defensibel, dan hemat komputasi untuk kohort PIMA.
+- Pada model leak-free, analisis SHAP mengembalikan **Glukosa ke peringkat #1** dan **BMI ke peringkat #3**, memulihkan kebenaran klinis.
+
+---
+
+## 📊 Visualisasi Publikasi Utama (Key Exhibits)
+
+Seluruh gambar resolusi tinggi (300 DPI) telah dihasilkan dan tersimpan di repositori:
+
+| Gambar | Lokasi File | Deskripsi & Peran dalam Naskah |
 |---|---|---|
-| `Insulin` | **0.2057** | Direct marker of pancreatic $\beta$-cell burden |
-| `HOMA_IR` | **0.1897** | Gold-standard surrogate index for insulin resistance |
-| `Glucose_Insulin` | **0.1892** | Dynamic product capturing metabolic severity |
-| `Insulin_BMI` | **0.1624** | Adiposity-driven hyperinsulinemia index |
-| `Glucose_Age` | **0.1482** | Age-dependent glycemic progression |
-| `RiskScore` | **0.1464** | Multi-factorial metabolic syndrome indicator |
-| `Glucose_BMI` | **0.1374** | Synergistic obesity-glycemia risk factor |
-| `Glucose` | **0.1170** | Primary diagnostic glycemic criterion |
-| `Age` | **0.0814** | Baseline physiological senescence |
-| `BMI` | **0.0788** | Adiposity assessment |
+| **Exhibit A** | `v2/figures_v2/A1_imputer_x_model.png` | Matrix 50-Fold CV: Metode Imputasi × Model Klasifikasi (Leak-Free) |
+| **Exhibit B** | `figures/09_multi_model_roc_curves_with_consensus.png` | Kurva ROC-AUC Multi-Model & Consensus Ensemble *(Permintaan Bu Yunen)* |
+| **Exhibit C** | `figures/12_consensus_model_confusion_matrix.png` | Confusion Matrix Model Consensus pada Holdout Split *(Permintaan Bu Yunen)* |
+| **Exhibit D** | `v2/figures_v2/A3_leak_free_shap_ranking.png` | Ranking Fitur Global SHAP Murni Leak-Free (Glukosa #1) |
+| **Exhibit E** | `v2/figures_v2/A2_threshold_tradeoff_curve.png` | Kurva Tradeoff Threshold Skrining Klinis (Sensitivitas $79.85\%$ pada ambang $0.37$) |
+| **Exhibit F** | `v2/figures_v2/A4_partial_dependence_profiles.png` | Profil Partial Dependence untuk Glukosa, BMI, Age, dan Insulin |
 
 ---
 
-## 🏆 Benchmark Results & Comparative Performance
+## 📁 Struktur Repositori
 
-All models were evaluated using **Stratified 10-Fold Cross-Validation** (preserving class proportions across every fold) and **Holdout Validation**.
-
-### 1. Imputation Method Comparison (Baseline 10-Fold CV)
-
-| Classifier Architecture | Raw Dataset | LTR | NSSR | SIM | TR | **RLTR (Champion)** |
-|---|---|---|---|---|---|---|
-| **CatBoost** | 0.7486 | 0.7642 | 0.7668 | 0.7851 | 0.7642 | **`0.8489`** |
-| **LightGBM** | 0.7512 | 0.7629 | 0.7577 | 0.7668 | 0.7629 | **`0.8450`** |
-| **Gradient Boosting** | 0.7591 | 0.7616 | 0.7603 | 0.7812 | 0.7694 | **`0.8450`** |
-| **XGBoost** | 0.7526 | 0.7577 | 0.7629 | 0.7785 | 0.7681 | **`0.8398`** |
-| **Random Forest** | 0.7604 | 0.7577 | 0.7655 | 0.7786 | 0.7656 | **`0.8398`** |
-| **Extra Trees** | 0.7565 | 0.7642 | 0.7616 | 0.7799 | 0.7695 | **`0.8033`** |
-| **SVM (RBF Kernel)** | 0.7539 | 0.7630 | 0.7630 | 0.7695 | 0.7604 | **`0.8085`** |
-| **Logistic Regression** | 0.7604 | 0.7642 | 0.7616 | 0.7694 | 0.7616 | **`0.7642`** |
-
-### 2. Optimized Ensembles & Benchmark Comparison
-
-| Model Configuration | Phase / Dataset | 10-Fold CV Acc | Acc Std ($\pm$) | ROC-AUC | Peak Fold Acc | Holdout Test Acc |
-|---|---|---|---|---|---|---|
-| **Previous Work (Upperclassmen)** | Prior Research | 0.8800 | N/A | N/A | N/A | 0.8800 |
-| **Target Research Goal** | Target | $\ge$ 0.9000 | N/A | N/A | N/A | $\ge$ 0.9000 |
-| **LightGBM (Tuned)** | RLTR (Optimized) | 0.8516 | $\pm 0.042$ | 0.9116 | 0.9221 | 0.8831 |
-| **CatBoost (Tuned)** | RLTR (Optimized) | 0.8593 | $\pm 0.038$ | 0.9141 | 0.9481 | 0.8896 |
-| **Soft Voting Ensemble** | **RLTR (Optimized)** | **`0.8607`** | $\pm 0.038$ | **`0.9157`** | **`0.9481`** | **`0.8961`** |
-| **Champion Holdout Peak** | **RLTR (Optimized)** | — | — | **`0.9476`** | **`0.9481`** | **`0.9481` (94.8%)** |
-
-> **Summary**: The Soft-Voting Ensemble on RLTR breaks the 0.88 benchmark across holdout evaluations (reaching **89.61% to 94.81%**) and achieves individual CV validation folds of **94.81%** with an overall ROC-AUC of **0.9157 - 0.9476**.
-
----
-
-## 📁 Project Architecture
-
-```
+```text
 DiabeticAnalysis/
-├── .gitignore                      # Git exclusion rules (ignores CSVs, venv, results)
-├── README.md                       # Comprehensive research documentation (this file)
-├── requirements.txt                # Python environment specifications
-├── pipeline.py                     # Automated, sequential execution script
-├── diabetes_analysis.ipynb         # Interactive Jupyter Notebook for paper drafting
-├── Dataset Diabetes.csv            # Original raw dataset (semicolon-separated)
-├── LTR_Imputed.csv                 # Linear Trend at Point Regression
-├── NSSR_Imputed.csv                # Non-linear Spline Regression
-├── RLTR_Imputed.csv                # Robust Linear Trend Regression (Top Performer)
+├── EXECUTIVE_SUMMARY_REPORT.pdf    # Laporan Eksekutif PDF 4 Halaman (Resmi & Siap Cetak/Kirim)
+├── EXECUTIVE_SUMMARY_REPORT.md     # Kloning Laporan Eksekutif Format Markdown
+├── PRESENTATION_GUIDE.md           # Panduan 12 Slide Presentasi + Prompt Gemini AI Pro
+├── README.md                       # Dokumentasi Utama Repositori (File ini)
+├── Dataset Diabetes.csv            # Data mentah PIMA Indians (semicolon-separated)
+├── LTR_Imputed.csv                 # Linear Trend Imputation
+├── NSSR_Imputed.csv                # Non-linear Spline Regression Imputation
+├── RLTR_Imputed.csv                # Robust Linear Trend Imputation (Terbukti Target Leakage)
 ├── SIM_Imputed.csv                 # Simple / Single Imputation Method
-├── TR_Imputed.csv                  # Trend Regression
-├── venv/                           # Dedicated virtual environment on D: drive
-└── results/                        # Generated publication outputs & figures
-    ├── comparison_table.csv        # Comprehensive metrics table for all combinations
-    ├── optimized_results.csv       # Metrics for engineered & tuned models
-    ├── classification_report.txt   # Detailed text summary report
-    ├── best_model.joblib           # Serialized champion ensemble model
-    ├── accuracy_heatmap.png        # Heatmap: Classifier x Imputation Method (Accuracy)
-    ├── roc_auc_heatmap.png         # Heatmap: Classifier x Imputation Method (ROC-AUC)
-    ├── best_model_barplot.png      # Bar plot of peak model per dataset vs benchmarks
-    ├── grouped_bar_chart.png       # Grouped bar chart comparing model families
-    ├── boxplot_cv_scores.png       # Boxplot of CV fold distributions for top models
-    ├── feature_importance.png      # Mutual information ranking of clinical features
-    └── holdout_confusion_matrix.png# Confusion matrix for champion model
+├── TR_Imputed.csv                  # Trend Regression Imputation
+├── figures/                        # 12 Gambar Analisis Eksploratori Awal (Fig 01 - 12)
+├── v2/                             # Pipeline & Hasil Audit Forensik Defensibilitas (v2)
+│   ├── RESULTS.md                  # Dokumentasi Teknis Hasil Audit v2 Lengkap
+│   ├── figures_v2/                 # 4 Gambar Publikasi v2 (A1, A2, A3, A4)
+│   ├── results/                    # Hasil CSV Numerik Deterministik (Phase 1 s.d. Phase 6)
+│   └── scripts/                    # Skrip Python Deterministik (run_phase1.py s.d. run_phase6.py)
+└── venv/                           # Dedicated Virtual Environment Python 3.12
 ```
 
 ---
 
-## 🚀 Quickstart & Reproduction Guide
+## 🚀 Panduan Menjalankan Kode (Deterministik & Reproducible)
 
-### 1. Environment Activation
-
-The project is pre-configured with a Python virtual environment located directly in this repository on the `D:` drive (preserving `C:` drive storage):
+Seluruh skrip berjalan langsung menggunakan virtual environment yang tersedia:
 
 ```powershell
-# In Windows PowerShell:
-.\venv\Scripts\Activate.ps1
+# Phase 1: Replikasi baseline paper (0.8506), uji McNemar, dan bootstrap 95% CI
+.\venv\Scripts\python.exe v2/scripts/run_phase1.py
+
+# Phase 2: Audit matematis target leakage, korelasi parsial, dan rekonstruksi class-conditional
+.\venv\Scripts\python.exe v2/scripts/run_phase2.py
+
+# Phase 3: Benchmark 50-fold leak-free imputasi & uji Nadeau-Bengio corrected resampled t-test
+.\venv\Scripts\python.exe v2/scripts/run_phase3.py
+
+# Phase 4: Uji ablasi fitur nested CV, benchmarking 10 model, dan optimasi threshold skrining
+.\venv\Scripts\python.exe v2/scripts/run_phase4.py
+
+# Phase 5: Analisis interpretability SHAP murni leak-free dan profil Partial Dependence (PDP)
+.\venv\Scripts\python.exe v2/scripts/run_phase5.py
+
+# Phase 6: Evaluasi akhir pada untouched holdout test set (seed 42)
+.\venv\Scripts\python.exe v2/scripts/run_phase6.py
 ```
-
-### 2. Running the Full Automated Pipeline
-
-To run the complete sequential benchmark, generate all figures, and export results:
-
-```powershell
-.\venv\Scripts\python.exe pipeline.py
-```
-
-Execution completes in approximately **2–3 minutes** using multi-core parallelization (`n_jobs=-1`).
 
 ---
 
-## 📓 Jupyter Notebook
+## 🎓 Kesiapan untuk Sidang & Publikasi Jurnal
 
-The included [`diabetes_analysis.ipynb`](file:///diabetes_analysis.ipynb) allows interactive exploration and visualization cell-by-cell. You can open and run it directly in VS Code or Jupyter Lab:
-
-- Step-by-step data verification and Glucose-0 inspection.
-- Visualizing feature distributions and the engineered HOMA-IR metric.
-- Interactive model training and confusion matrix rendering.
-
----
-
-## 📝 Scientific Insights for Paper Drafting
-
-When writing the paper with your lecturer, highlight the following key technical contributions:
-
-1. **Methodological Superiority of Robust Imputation (RLTR)**:
-   Standard imputation methods like LTR assume linear normality, which fails in clinical variables with skewed distributions (e.g., Insulin skewness $> 2.2$). RLTR's resistance to leverage outliers prevents distorted imputations, directly translating into higher diagnostic accuracy ($\Delta \approx +7.5\%$).
-2. **Endocrinological Feature Representation**:
-   Standard machine learning papers on the PIMA dataset feed raw, unadjusted features. Our paper introduces **HOMA-IR** and the **Glucose-Insulin interaction product**, which rank at the top of mutual information and allow tree-based ensembles to isolate insulin-resistant phenotypes accurately.
-3. **Rectifying the Unimputed Glucose Oversight**:
-   Exposing the fact that existing imputation datasets failed to impute Glucose = 0 constitutes a novel data-cleaning insight that strengthens the paper's rigor.
-4. **Publication-Ready Figures**:
-   All 7 figures generated in `results/` are formatted at **180 DPI** with consistent typography and color palettes, ready for inclusion in IEEE, Springer, or Elsevier journal submissions.
+Repositori ini siap diajukan untuk bimbingan skripsi / tugas akhir bersama **Bu Yunen** maupun penyusunan naskah jurnal internasional (Q1/Q2 Medical Informatics). Temuan audit target leakage dan perbaikan higienitas data merupakan kontribusi langka yang memberikan nilai akademis tinggi bagi karya ilmiah ini.
