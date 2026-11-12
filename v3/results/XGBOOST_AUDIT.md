@@ -41,3 +41,4 @@ The published Paper 1 / Paper 2 baseline of **$85.0649\%$** ($90\text{ TN}, 10\t
 To maintain complete scientific rigor and avoid misleading readers:
 - Any configuration using `max_depth=6, n_estimators=100, learning_rate=0.1` is formally designated as the **"ladder configuration (lr=0.1, depth=6, n_est=100)"**.
 - The term "default XGBoost" is restricted exclusively to unparameterized calls matching the native library specification (`learning_rate=0.3`).
+
