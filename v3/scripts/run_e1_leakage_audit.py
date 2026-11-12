@@ -72,6 +72,20 @@ print("  [SANITY ANCHOR CONFIRMED]: RLTR target leakage estimates reproduced to 
 # ------------------------------------------------------------------------------
 audit_records = []
 
+def fisher_ci(r, n, k):
+    """
+    Fisher z 95% confidence interval for partial correlation with k controlled covariates.
+    df = n - 2 - k, SE = 1 / sqrt(n - k - 3).
+    """
+    if n - k - 3 <= 0 or np.isnan(r) or abs(r) >= 1.0:
+        return np.nan, np.nan
+    se = 1.0 / np.sqrt(n - k - 3)
+    z = np.arctanh(r)
+    z_crit = stats.norm.ppf(0.975)
+    z_low = z - z_crit * se
+    z_high = z + z_crit * se
+    return float(np.tanh(z_low)), float(np.tanh(z_high))
+
 def run_leakage_diagnostics(df_subset, target_attr, covars_base, all_covars, dataset_name, subset_label):
     y_target = df_subset[target_attr]
     outcome = df_subset["Outcome"]
@@ -171,6 +185,7 @@ for name, filename in imputed_files.items():
     ry_ins = sm.OLS(valid_ins["Outcome"], sm.add_constant(valid_ins[covars_ins_raw])).fit().resid
     r_part_ins, p_part_ins = stats.pearsonr(rx_ins, ry_ins)
     r_biv_ins, p_biv_ins = stats.pearsonr(valid_ins["Insulin_imp"], valid_ins["Outcome"])
+    ci_low_ins, ci_high_ins = fisher_ci(r_part_ins, N_used_ins, k=7)
     
     listwise_records.append({
         "dataset": name,
@@ -181,6 +196,8 @@ for name, filename in imputed_files.items():
         "ols_t_base": np.nan,
         "ols_p_base": np.nan,
         "partial_r": float(r_part_ins),
+        "ci_95_lower": ci_low_ins,
+        "ci_95_upper": ci_high_ins,
         "partial_p": float(p_part_ins),
         "bivariate_r": float(r_biv_ins),
         "bivariate_p": float(p_biv_ins),
@@ -197,6 +214,7 @@ for name, filename in imputed_files.items():
     ry_skin = sm.OLS(valid_skin["Outcome"], sm.add_constant(valid_skin[covars_skin_no_ins])).fit().resid
     r_part_skin, p_part_skin = stats.pearsonr(rx_skin, ry_skin)
     r_biv_skin, p_biv_skin = stats.pearsonr(valid_skin["Skin_imp"], valid_skin["Outcome"])
+    ci_low_skin, ci_high_skin = fisher_ci(r_part_skin, N_used_skin, k=6)
     
     listwise_records.append({
         "dataset": name,
@@ -207,6 +225,8 @@ for name, filename in imputed_files.items():
         "ols_t_base": np.nan,
         "ols_p_base": np.nan,
         "partial_r": float(r_part_skin),
+        "ci_95_lower": ci_low_skin,
+        "ci_95_upper": ci_high_skin,
         "partial_p": float(p_part_skin),
         "bivariate_r": float(r_biv_skin),
         "bivariate_p": float(p_biv_skin),
@@ -245,6 +265,7 @@ for name, filename in imputed_files.items():
     ry_i = sm.OLS(y_ins_sens, sm.add_constant(X_ins_sens)).fit().resid
     r_i, p_i = stats.pearsonr(rx_i, ry_i)
     r_biv_i, p_biv_i = stats.pearsonr(ins_imp, y_ins_sens)
+    ci_low_i, ci_high_i = fisher_ci(r_i, n_mis_ins, k=7)
     
     sens_records.append({
         "dataset": name,
@@ -255,6 +276,8 @@ for name, filename in imputed_files.items():
         "ols_t_base": np.nan,
         "ols_p_base": np.nan,
         "partial_r": float(r_i),
+        "ci_95_lower": ci_low_i,
+        "ci_95_upper": ci_high_i,
         "partial_p": float(p_i),
         "bivariate_r": float(r_biv_i),
         "bivariate_p": float(p_biv_i),
@@ -271,6 +294,7 @@ for name, filename in imputed_files.items():
     ry_s = sm.OLS(y_skin_sens, sm.add_constant(X_skin_sens)).fit().resid
     r_s, p_s = stats.pearsonr(rx_s, ry_s)
     r_biv_s, p_biv_s = stats.pearsonr(skin_imp, y_skin_sens)
+    ci_low_s, ci_high_s = fisher_ci(r_s, n_mis_skin, k=6)
     
     sens_records.append({
         "dataset": name,
@@ -281,6 +305,8 @@ for name, filename in imputed_files.items():
         "ols_t_base": np.nan,
         "ols_p_base": np.nan,
         "partial_r": float(r_s),
+        "ci_95_lower": ci_low_s,
+        "ci_95_upper": ci_high_s,
         "partial_p": float(p_s),
         "bivariate_r": float(r_biv_s),
         "bivariate_p": float(p_biv_s),
