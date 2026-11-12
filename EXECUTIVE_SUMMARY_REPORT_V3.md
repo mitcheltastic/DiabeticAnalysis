@@ -1,22 +1,23 @@
-# 📑 Laporan Ringkasan Eksekutif Penelitian (Edisi v3 — Final Defensibel)
-## *Audit Forensik Target Leakage, Replikasi Presisi Baseline Kakak Kelas, dan Standarisasi Model Klinis Murni (Kohort Diabetes PIMA)*
+# 📑 Laporan Ringkasan Eksekutif Riset (Edisi v3 — Basis Paper Konferensi Baru)
+## *Audit Forensik Target Leakage, Replikasi Presisi Baseline, dan Standarisasi Metodologi Klinis Murni (Kohort Diabetes PIMA)*
 
-> **Penyusun / Mahasiswa**: Mitchel Mohamad Affandi  
-> **Dosen Pembimbing**: Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.  
-> **Status Dokumen**: Final, Sah, & Terkunci untuk Sidang Tugas Akhir & Publikasi Jurnal Internasional  
+> **Peneliti / Penulis Utama**: Mitchel Mohamad Affandi  
+> **Dosen Pembimbing / Co-Author**: Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.  
+> **Status Dokumen**: Final, Terverifikasi, & Menjadi Basis Ilmiah Naskah Konferensi Internasional Baru (IEEE / Scopus Indexed)  
 > **Tanggal**: November 2026  
+> **Target Publikasi**: International Conference on Biomedical Engineering / Informatics (IEEE / Scopus Indexed Proceedings)  
 > **Repositori**: `mitcheltastic/DiabeticAnalysis` (Cabang `main`, Siklus Retraining v3)  
 > **Protokol Terdaftar**: `v3/PROTOCOL.md`, `v3/PROTOCOL_AMENDMENT_1.md`, `v3/PROTOCOL_AMENDMENT_2.md`  
 
 ---
 
-## 🧭 Ringkasan Eksekutif & Jawaban Inti: Mengapa Versi v3 Jauh Lebih Unggul & Defensibel
+## 🧭 Ringkasan Eksekutif & Jawaban Inti: Mengapa Edisi v3 Sangat Kuat untuk Paper Konferensi Baru
 
-Dalam riset *machine learning* biomedis, **kebenaran metodologis adalah mahkota tertinggi**. Angka akurasi tinggi yang dibangun di atas fondasi kebocoran data (*data leakage*) atau optimasi data uji (*test-set tuning*) adalah ilusi yang rapuh dan langsung runtuh di hadapan dewan penguji sidang maupun *peer reviewer* jurnal internasional.
+Dalam penulisan *conference paper* di bidang *biomedical machine learning*, **kebenaran metodologis dan kebaruan audit forensik adalah nilai jual ilmiah tertinggi**. Angka performa tinggi yang diperoleh dari kebocoran data (*data leakage*) atau penalaan pada data uji (*test-set tuning*) adalah klaim semu yang akan langsung digugurkan oleh *peer reviewer* internasional yang teliti. Sebaliknya, makalah yang berhasil mereplikasi hasil terdahulu, membongkar anomali kebocoran data secara matematis, dan menegakkan standar pengujian yang murni (*leak-free*) memiliki **posisi ilmiah yang sangat prestisius, mudah diterima (*high acceptance rate*), dan berpotensi meraih sitasi tinggi**.
 
-Laporan Edisi v3 ini merupakan **sekuel resmi dan penyempurnaan menyeluruh** dari dokumen eksekutif sebelumnya (`EXECUTIVE_SUMMARY_REPORT.md` edisi v2). Jika versi v2 berfokus pada pembongkaran awal dan replikasi parsial, maka **Edisi v3 ini menghadirkan benteng pembuktian ilmiah yang kedap air (*airtight*)**:
+Laporan Edisi v3 ini menyajikan seluruh data empiris, analisis statistik formal, dan justifikasi naskah untuk paper konferensi baru bersama Ibu Dr. R. Yunendah Nur Fu'adah:
 
-1. **Replikasi Presisi Absolut Baseline Paper Terdahulu**: Kami berhasil membuktikan secara eksak dari mana asal angka $85.06\%$ pada Paper 1 ($90\text{ TN}, 10\text{ FP}, 13\text{ FN}, 41\text{ TP}$) dan angka $87.01\%$ pada Paper 2 ($92\text{ TN}, 8\text{ FP}, 12\text{ FN}, 42\text{ TP}$). Angka-angka tersebut terbukti secara matematis merupakan produk kombinasi kebocoran *rough-set* pada file RLTR dan *tuning* langsung ke data uji (*test-set objective tuning*).
+1. **Replikasi Presisi Absolut Baseline Paper Terdahulu**: Kami berhasil membuktikan secara eksak dari mana asal angka $85.06\%$ pada Paper 1 ($90\text{ TN}, 10\text{ FP}, 13\text{ FN}, 41\text{ TP}$) dan angka $87.01\%$ pada Paper 2 ($92\text{ TN}, 8\text{ FP}, 12\text{ FN}, 42\text{ TP}$). Terbukti secara matematis bahwa angka tersebut merupakan produk kombinasi kebocoran *rough-set* pada file RLTR dan *tuning* langsung ke data uji (*test-set objective tuning*).
 2. **Koreksi Fundamental Nomenklatur Imputasi**: Memperbaiki kekeliruan literatur terdahulu. Kelima file (`TR`, `LTR`, `RLTR`, `NSSR`, `SIM`) dikoreksi dari sebutan salah "regresi parametrik" menjadi identitas aslinya: **Metode Relasi Toleransi dan Keserupaan Rough-Set (*Rough-Set Similarity & Tolerance Relations*)**.
 3. **Audit Kebocoran 3-Tier & Uji Independensi Kondisional OLS**: Pada data biologi murni ($N=392$), nilai target `Outcome` sama sekali tidak memiliki korelasi parsial terhadap insulin ($t = -0.484, p = 0.6285$). Sebaliknya, pada file RLTR, label target bocor ke dalam insulin dengan nilai ekstrem **$t = 26.77, p = 3.97 \times 10^{-88}$** ($\Delta\beta = +34.84\text{ mg/dL}$).
 4. **Pembuktian Kesetaraan Imputasi (50 Folds & Uji TOST)**: Melalui 50-fold Repeated Stratified CV, uji kesetaraan dua arah (*Two-One-Sided Tests* / TOST) membuktikan bahwa algoritma imputasi kompleks (MICE, MissForest) **secara statistik setara dengan imputasi median sederhana** ($p_{\text{TOST}} < 0.0001$).
@@ -27,10 +28,10 @@ Laporan Edisi v3 ini merupakan **sekuel resmi dan penyempurnaan menyeluruh** dar
 
 ```
 ========================================================================================================
-                                PETA JALUR RISET EDISI v3 (FINAL DEFENSIBEL)
+                      PETA JALUR RISET EDISI v3 (BASIS PAPER KONFERENSI INTERNASIONAL)
 ========================================================================================================
 [E1: Audit Kebocoran 3-Tier]   --> Bukti OLS Obyektif: t = 26.77, p = 3.97e-88 (RLTR bocor target masif)
-[E2: Tangga Inflasi 100 Seed]  --> Dekomposisi: Leak-Free 75.25% --> RLTR 83.69% --> Test-Tuning 86.45%
+[E2: Tangga Inflasi 100 Seed]  --> Dekomposisi: Leak-Free 75.25% --> RLTR 83.69% --> Test-Tuned 86.45%
 [E2b: Replikasi Presisi Paper] --> Replikasi exact: Paper 1 (90,10,13,41) & Paper 2 (92,8,12,42)
 [E3: Uji Kesetaraan TOST]      --> 50-fold nested CV: Imputasi Median = MICE = MissForest (p_TOST < 0.0001)
 [E4: Parsimoni Seleksi Model]  --> Amendemen 2: LogReg-L2 Default menang atas pohon boosting (p_Holm = 1.00)
@@ -60,7 +61,7 @@ Data fisiologis yang bernilai `0` merupakan representasi dari data yang tidak te
 Sebanyak 376 pasien ($48.96\%$) memiliki setidaknya satu nilai hilang. Pasien dengan rekam data biologis lengkap (*listwise complete*) berjumlah **392 pasien**, sedangkan pasien dengan nilai insulin tercatat (*observed insulin*) berjumlah **394 pasien**.
 
 ### 1.2 Koreksi Taksonomi: Metode Imputasi Rough-Set (Bukan Regresi Parametrik)
-Salah satu koreksi ilmiah fundamental pada Edisi v3 (Item 5 `CORRECTIONS_TO_V2.md`) adalah pelurusan nama metode imputasi yang digunakan pada paper-paper terdahulu:
+Salah satu kontribusi klarifikasi fundamental dalam paper konferensi baru kita (Item 5 `CORRECTIONS_TO_V2.md`) adalah pelurusan nama metode imputasi yang digunakan pada literatur terdahulu:
 - **`TR`**: **Tolerance Relation** (Relasi Toleransi Rough-Set)
 - **`LTR`**: **Limited Tolerance Relation** (Relasi Toleransi Terbatas)
 - **`RLTR`**: **Relative Limited Tolerance Relation** (Relasi Toleransi Terbatas Relatif)
@@ -135,7 +136,7 @@ Uji sensitivitas pada 100 seed membuktikan:
 
 ## ⚖️ Bab 3: Kesetaraan Metode Imputasi (Eksperimen E3)
 
-Sebuah pertanyaan penting dari dewan penguji adalah: *"Apakah kita wajib menggunakan algoritma imputasi yang canggih dan mahal seperti MICE atau MissForest?"*
+Sebuah pertanyaan kritis dalam metodologi penulisan paper konferensi adalah: *"Apakah kita wajib menggunakan algoritma imputasi yang canggih dan mahal secara komputasi seperti MICE atau MissForest?"*
 
 Eksperimen E3 menjawab tuntas dengan mengevaluasi **6 strategi imputasi leak-free** pada **50-fold Repeated Stratified CV** lintas 3 keluarga model (*Logistic Regression*, *XGBoost Reference*, *CatBoost*):
 
@@ -155,14 +156,14 @@ Eksperimen E3 menjawab tuntas dengan mengevaluasi **6 strategi imputasi leak-fre
 | | MICE (BayesianRidge) | $0.7797 \pm 0.0371$ | $+0.00\text{ pp}$ ($p = 1.000$) | $p < 0.0001$ (Setara) | $0.8411 \pm 0.0362$ |
 | | MissForest (ExtraTrees) | $0.7802 \pm 0.0373$ | $+0.05\text{ pp}$ ($p = 0.865$) | $p < 0.0001$ (Setara) | $0.8410 \pm 0.0361$ |
 
-> **Vonis Ilmiah**: Tidak ada satupun metode imputasi canggih yang mampu mengungguli imputasi median secara signifikan ($p \ge 0.442$). Seluruh 15 uji perbandingan memenuhi **kesetaraan statistik TOST pada margin ketat $\pm 0.015$ ($p_{\text{TOST}} < 0.0001$)**. Imputasi median adalah pilihan paling elegan, tercepat, bebas overfitting, dan paling defensibel secara klinis.
+> **Vonis Ilmiah untuk Naskah Paper**: Tidak ada satupun metode imputasi canggih yang mampu mengungguli imputasi median secara signifikan ($p \ge 0.442$). Seluruh 15 uji perbandingan memenuhi **kesetaraan statistik TOST pada margin ketat $\pm 0.015$ ($p_{\text{TOST}} < 0.0001$)**. Imputasi median adalah pilihan paling elegan, tercepat, bebas overfitting, dan paling defensibel secara klinis.
 
 ---
 
 ## 🏛️ Bab 4: Seleksi Model & Prinsip Parsimoni (Eksperimen E4)
 
 ### 4.1 Aturan Seleksi Model Akhir (Protokol Amendemen 2)
-Untuk mencegah bias subjektif peneliti, kami menetapkan aturan keputusan formal sebelum ringkasan E4 dieksekusi:
+Untuk mencegah bias subjektif peneliti dalam paper, kami menetapkan aturan keputusan formal secara apriori:
 - Kumpulan kandidat: **LogReg-L2 Default** vs Model Tuned 50 Folds (**LogReg-EN**, **XGBoost Tuned**, **CatBoost Tuned**).
 - **Aturan Parsimoni**: Jika tidak ada model tertuning yang mengalahkan LogReg-L2 Default pada ROC-AUC outer-fold dengan signifikansi $p_{\text{Holm}} < 0.05$ (Nadeau-Bengio corrected), maka **model akhir yang ditetapkan adalah LogReg-L2 Default**.
 
@@ -180,7 +181,7 @@ Evaluasi ketat pada 50 outer test folds yang belum pernah dilihat model:
 Seluruh model pohon tertuning gagal menunjukkan keunggulan signifikan ($p_{\text{Holm}} = 1.0000$). Berdasarkan asas *Occam's Razor*, **Logistic Regression L2 Default dengan imputasi median in-fold dan StandardScaler ditetapkan sebagai MODEL AKHIR RESMI PENELITIAN**.
 
 ### 4.4 Keterbatasan Ruang Cari: Fenomena Saturasi Batas Bawah
-Eksperimen E4 mengungkap temuan teknis menarik (Item 11 `CORRECTIONS_TO_V2.md`):
+Eksperimen E4 mengungkap temuan teknis berharga untuk diskusi paper (Item 11 `CORRECTIONS_TO_V2.md`):
 - Pada proses penalaan hyperparameter outer fold, pohon *gradient boosting* berulang kali menabrak batas bawah kedalaman pohon:
   - XGBoost `max_depth` (rentang $[2, 8]$) memilih batas bawah ($=2$) pada **$78.0\%$ fold ($39/50$)**.
   - CatBoost `depth` (rentang $[3, 8]$) memilih batas bawah ($=3$) pada **$68.0\%$ fold ($34/50$)**.
@@ -190,8 +191,8 @@ Eksperimen E4 mengungkap temuan teknis menarik (Item 11 `CORRECTIONS_TO_V2.md`):
 
 ## 📈 Bab 5: Optimasi Klinis, Kalibrasi Probabilitas, & DCA (Eksperimen E5)
 
-### 5.1 Koreksi Seleksi Threshold (Koreksi v2)
-Pada laporan terdahulu v2, nilai threshold $0.37$ diklaim menghasilkan sensitivitas $79.85\%$ dan spesifisitas $75.20\%$. Audit v3 menemukan bahwa threshold $0.37$ tersebut dioptimasi dan dievaluasi pada data out-of-fold yang sama (*post-hoc threshold selection leakage*). 
+### 5.1 Koreksi Seleksi Threshold (Koreksi Metodologis)
+Pada laporan awal v2, nilai threshold $0.37$ diklaim menghasilkan sensitivitas $79.85\%$ dan spesifisitas $75.20\%$. Audit v3 menemukan bahwa threshold $0.37$ tersebut dioptimasi dan dievaluasi pada data out-of-fold yang sama (*post-hoc threshold selection leakage*). 
 
 Di Edisi v3, seleksi threshold dijalankan secara **nested murni** (dipilih di dalam inner loop, dievaluasi di outer fold):
 
@@ -214,7 +215,7 @@ DCA membuktikan bahwa model akhir kita memberikan **keuntungan klinis bersih (*c
 
 ## 🎯 Bab 6: Uji Subgrup Headline & Bukti Fatalitas RLTR (Eksperimen E6)
 
-Ini adalah **temuan paling dramatis dalam Edisi v3** yang menjadi senjata pamungkas dalam mempertahankan penelitian di sidang tugas akhir.
+Ini adalah **temuan inti (*headline novelty*) terbesar dalam paper konferensi baru kita** yang membuktikan mengapa RLTR membahayakan praktik medis klinis.
 
 ### 6.1 Runtuhnya Model RLTR pada Pasien Berinsulin Asli (100 Seeds)
 Kami memecah data uji 100 seed menjadi dua subgrup klinis:
@@ -232,7 +233,7 @@ Kami memecah data uji 100 seed menjadi dua subgrup klinis:
 1. **Model LogReg-L2 Mengalahkan Model RLTR pada Pasien Biologis Asli**:
    Pada kelompok pasien yang memiliki data insulin asli ($n \approx 70$), model linier leak-free kita mengalahkan model RLTR dengan selisih yang signifikan secara statistik:
    $$\mathbf{\Delta\text{ROC-AUC} (\text{LogReg} - \text{RLTR}) = +0.0386} \quad (95\%\text{ CI: } [+0.0039, +0.0732], \mathbf{p_{\text{NB}} = 0.0295})$$
-   *Artinya: Model kakak kelas hanya unggul pada data buatan! Ketika bertemu pasien nyata dengan data lab lengkap, model kita justru terbukti lebih akurat.*
+   *Artinya: Model literatur terdahulu hanya unggul semu pada data buatan! Ketika bertemu pasien nyata dengan data lab lengkap, model murni kitalah yang terbukti lebih akurat.*
 2. **Uji Interaksi Difference-in-Differences ($\Delta\Delta$)**:
    $$\mathbf{\Delta\Delta\text{Akurasi} = -18.51\text{ pp}} \quad (95\%\text{ CI: } [-23.56, -13.45]\text{ pp}, \mathbf{p_{\text{NB}} = 8.98 \times 10^{-11}})$$
    $$\mathbf{\Delta\Delta\text{ROC-AUC} = -0.1770} \quad (95\%\text{ CI: } [-0.2266, -0.1274], \mathbf{p_{\text{NB}} = 2.15 \times 10^{-10}})$$
@@ -253,7 +254,7 @@ Apakah kita perlu mengimputasi Insulin dan SkinThickness? Eksperimen ablasi retr
 Untuk memverifikasi kebenaran fisiologis secara definitif, Eksperimen E7 menjalankan **200 bootstrap refits** pada $614$ baris data latih:
 
 | Nama Fitur Klinis | LogReg-L2 Mean \|SHAP\| | LogReg-L2 Median Rank [IQR] | Frekuensi Top-3 LogReg | Tuned XGBoost Mean \|SHAP\| | Tuned XGBoost Median Rank [IQR] | Frekuensi Top-3 XGBoost | Status Biologis |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
 | **Glucose** | $1.0535 \pm 0.1088$ | **$1.0$ [$0.0$]** | **$100.0\%$** | $0.8407 \pm 0.0926$ | **$1.0$ [$0.0$]** | **$100.0\%$** | Biomarker Definitif Primer |
 | **BMI** | $0.5809 \pm 0.1066$ | **$2.0$ [$0.0$]** | **$100.0\%$** | $0.4835 \pm 0.0845$ | **$2.0$ [$0.0$]** | **$100.0\%$** | Pemicu Adipositas & Resistensi |
 | **Pregnancies** | $0.3298 \pm 0.1198$ | $3.0$ [$0.0$] | $77.0\%$ | $0.1178 \pm 0.0587$ | $6.0$ [$2.0$] | $3.5\%$ | Beban Metabolik Gestasional |
@@ -285,29 +286,29 @@ Sebagai bukti integritas akademik yang transparan, seluruh perbedaan dari lapora
 
 ---
 
-## 🎓 Bab 9: Panduan Strategis Menghadapi Dosen Pembimbing & Dewan Penguji
+## 🎓 Bab 9: Panduan Strategis Penulisan Paper Konferensi & Menjawab Peer Reviewer
 
-Jika Ibu Dr. Yunendah atau dewan penguji sidang bertanya:
-> *"Kenapa akurasi akhir penelitian ini berkisar di angka 75% - 77%, padahal paper kakak kelas bisa mencapai 85% - 87%?"*
+Jika *peer reviewer* konferensi atau jurnal internasional mengajukan pertanyaan kritis:
+> *"Mengapa akurasi akhir model penelitian ini berada di kisaran 76%–77%, padahal paper terdahulu (Paper 1 & Paper 2) mengklaim mencapai 85%–87%?"*
 
-Berikut adalah **5 Argumen Emas yang Tak Terbantahkan**:
+Berikut adalah **5 Argumen Emas yang Tak Terbantahkan (*Reviewer Rebuttal Strategy*)**:
 
-1. **"Kami Berhasil Mereplikasi Angka Kakak Kelas Hingga 1 Pasien Tepat"**
-   Kita tidak gagal mereplikasi; kita berhasil mereplikasi angka $85.06\%$ dan $87.01\%$ hingga ke digit matriks konfusi terkecil ($(90, 10, 13, 41)$ dan $(92, 8, 12, 42)$). Kita tahu persis bagaimana angka tersebut tercipta.
+1. **"Kami Berhasil Mereplikasi Angka Paper Terdahulu Hingga 1 Pasien Tepat"**
+   Kita tidak gagal mereplikasi; kita berhasil mereplikasi angka $85.06\%$ dan $87.01\%$ hingga ke digit matriks konfusi terkecil ($(90, 10, 13, 41)$ dan $(92, 8, 12, 42)$). Kita membuktikan secara matematis bagaimana angka tersebut diproduksi.
 2. **"Angka 85% - 87% Tersebut Terbukti Secara Matematis Mengandung Kebocoran Target"**
    Lonjakan akurasi tersebut hanya terjadi pada file RLTR di mana insulinnya disuntik label target ($t = 26.77, p = 3.97 \times 10^{-88}$).
-3. **"Model Kakak Kelas Runtuh Saat Bertemu Pasien Nyata"**
-   Pada Eksperimen E6, model RLTR ambruk sebesar $16.25\text{ pp}$ pada pasien berinsulin asli. Sebaliknya, model leak-free kita mengalahkan model RLTR sebesar $+0.0386$ AUC ($p = 0.0295$) pada pasien berinsulin asli. Model kitalah yang sesungguhnya bekerja di dunia nyata!
-4. **"Metodologi Kita Memenuhi Standar Emas Kedokteran Internasional"**
-   Penelitian kita menggunakan 100-seed benchmark, 50-fold nested CV, uji statistik Nadeau-Bengio, uji kesetaraan TOST, kalibrasi probabilitas, Decision Curve Analysis (DCA), dan 200 bootstrap SHAP.
-5. **"Karya Ini Menyelamatkan Literatur Ilmiah & Siap Publikasi Jurnal Q1"**
-   Membongkar *data leakage* dan menetapkan benchmark yang sahih adalah kontribusi tingkat tinggi (*novelty forensic audit*) yang sangat dicari oleh jurnal internasional bereputasi tinggi.
+3. **"Model Literatur Terdahulu Runtuh Saat Bertemu Pasien Nyata (Headline Finding)"**
+   Pada Eksperimen E6, model RLTR ambruk sebesar $16.25\text{ pp}$ pada pasien berinsulin asli laboratorium ($p = 2.25 \times 10^{-9}$). Sebaliknya, model leak-free kita mengalahkan model RLTR sebesar $+0.0386$ AUC ($p = 0.0295$) pada data biologis riil. Model kitalah yang sesungguhnya dapat diaplikasikan di dunia klinis!
+4. **"Metodologi Kita Memenuhi Standar Emas Metodologis Internasional"**
+   Penelitian kita menggunakan 100-seed split, 50-fold nested CV, uji statistik Nadeau-Bengio, uji kesetaraan TOST, kalibrasi probabilitas, Decision Curve Analysis (DCA), dan 200 bootstrap SHAP.
+5. **"Karya Ini Menyelamatkan Literatur Ilmiah & Menawarkan Kebaruan Tinggi (High Novelty)"**
+   Membongkar *data leakage*, mereplikasi literatur terdahulu, dan menetapkan benchmark yang sahih adalah kontribusi ilmiah langka (*novelty forensic audit*) yang sangat dicari oleh konferensi dan jurnal internasional bereputasi tinggi.
 
 ---
 
 ## 🖼️ Bab 10: Lampiran Galeri Visual Ilmiah Utama (Key Visual Exhibits v3)
 
-Berikut adalah visualisasi publikasi resolusi tinggi dari folder `v3/figures/`:
+Berikut adalah visualisasi publikasi resolusi tinggi dari folder `v3/figures/` yang siap digunakan sebagai gambar utama (*camera-ready figures*) pada paper konferensi:
 
 ### Exhibit 1: Tangga Inflasi Metodologis (Waterfall Decomposition)
 ![Exhibit 1: Tangga Inflasi Metodologis](file:///d:/1.%20COLLEGE/1.%20HERE%20WE%20GO/8.%20TUGAS%20AKHIR/5.1%20EXTRA%20BANTU%20BU%20YUNEN/DiabeticAnalysis/v3/figures/E2_inflation_ladder_waterfall.png)
@@ -331,10 +332,10 @@ Berikut adalah visualisasi publikasi resolusi tinggi dari folder `v3/figures/`:
 
 ---
 
-## 📌 Status Repositori & Kesiapan Teknis
+## 📌 Status Repositori & Kesiapan Naskah Konferensi
 
-- **Kode Eksperimen v3**: `v3/scripts/run_E1_leakage_audit.py` hingga `run_E7_bootstrap_stability.py` (Semua deterministik dan dapat dijalankan ulang).
+- **Kode Eksperimen v3**: `v3/scripts/run_E1_leakage_audit.py` hingga `run_E7_bootstrap_stability.py` (Semua deterministik dan dapat dijalankan ulang secara mandiri).
 - **Laporan Lengkap & Data CSV**: `v3/RESULTS_v3.md` dan 15 file CSV di `v3/results/`.
 - **Log Koreksi Audit**: `v3/results/CORRECTIONS_TO_V2.md` (Items 1 s.d. 12).
 - **Visual Publikasi Resolusi Tinggi**: 5 gambar di folder `v3/figures/`.
-- **Versi Git**: Tersinkronisasi bersih di cabang `main`.
+- **Versi Git**: Tersinkronisasi bersih di cabang `main`. Dokumen ini siap menjadi acuan penulisan naskah konferensi IEEE bersama Ibu Dr. Yunendah.

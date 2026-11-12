@@ -3,6 +3,7 @@ v3/scripts/build_executive_summary_v3_pdf.py
 Compiles EXECUTIVE_SUMMARY_REPORT_V3.pdf in the workspace root using ReportLab.
 Consolidates all Retraining Round v3 discoveries, experimental tables, and embedded high-res figures.
 Engineered precisely for a clean, professional 5-page layout.
+Oriented as the Executive Research Briefing & Manuscript Foundation for a New International Conference Paper.
 """
 
 import os
@@ -36,23 +37,24 @@ class NumberedCanvas(canvas.Canvas):
 
     def draw_page_decorations(self, page_count):
         self.saveState()
-        self.setFont("Helvetica-Bold", 8)
+        self.setFont("Helvetica-Bold", 7.5)
         self.setFillColor(colors.HexColor("#64748B"))
         
         # Header (on pages 2 and later)
+        # Using carefully measured string lengths to prevent any text overlap
         if self._pageNumber > 1:
-            self.drawString(36, 11 * inch - 26, "LAPORAN RINGKASAN EKSEKUTIF v3: AUDIT FORENSIK TARGET LEAKAGE & STANDARISASI PIMA")
-            self.setFont("Helvetica", 8)
-            self.drawRightString(8.5 * inch - 36, 11 * inch - 26, "Mitchel Mohamad Affandi | Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.")
+            self.drawString(36, 11 * inch - 26, "RESEARCH BRIEFING: AUDIT TARGET LEAKAGE PIMA (EDISI v3)")
+            self.setFont("Helvetica", 7.5)
+            self.drawRightString(8.5 * inch - 36, 11 * inch - 26, "M. M. Affandi & Dr. R. Y. N. Fu'adah (IEEE Conference Paper)")
             self.setStrokeColor(colors.HexColor("#CBD5E1"))
             self.setLineWidth(0.5)
             self.line(36, 11 * inch - 30, 8.5 * inch - 36, 11 * inch - 30)
 
         # Footer (on all pages)
         page_str = f"Halaman {self._pageNumber} dari {page_count}"
-        self.setFont("Helvetica", 8)
+        self.setFont("Helvetica", 7.5)
         self.drawRightString(8.5 * inch - 36, 20, page_str)
-        self.drawString(36, 20, "Repositori: github.com/mitcheltastic/DiabeticAnalysis (Edisi v3 Final) | Dokumen Resmi Sidang TA & Jurnal")
+        self.drawString(36, 20, "Repositori: github.com/mitcheltastic/DiabeticAnalysis (v3 Final) | Basis Paper Konferensi Internasional")
         self.setStrokeColor(colors.HexColor("#CBD5E1"))
         self.setLineWidth(0.5)
         self.line(36, 30, 8.5 * inch - 36, 30)
@@ -89,8 +91,8 @@ def build_pdf(filename="EXECUTIVE_SUMMARY_REPORT_V3.pdf"):
         'DocTitle',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=16,
-        leading=19,
+        fontSize=15.5,
+        leading=18.5,
         textColor=c_primary,
         spaceAfter=2
     )
@@ -99,18 +101,18 @@ def build_pdf(filename="EXECUTIVE_SUMMARY_REPORT_V3.pdf"):
         'DocSubTitle',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=9,
-        leading=12,
+        fontSize=8.5,
+        leading=11.5,
         textColor=c_secondary,
-        spaceAfter=6
+        spaceAfter=5
     )
 
     meta_style = ParagraphStyle(
         'MetaBox',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=7.5,
-        leading=10,
+        fontSize=7.2,
+        leading=9.8,
         textColor=c_dark
     )
 
@@ -118,8 +120,8 @@ def build_pdf(filename="EXECUTIVE_SUMMARY_REPORT_V3.pdf"):
         'H1',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=10,
-        leading=13,
+        fontSize=9.8,
+        leading=12.5,
         textColor=c_primary,
         spaceBefore=6,
         spaceAfter=3,
@@ -211,15 +213,15 @@ def build_pdf(filename="EXECUTIVE_SUMMARY_REPORT_V3.pdf"):
     # =========================================================================
     # HALAMAN 1: HEADER, METADATA, RINGKASAN EKSEKUTIF, & AUDIT LEAKAGE E1
     # =========================================================================
-    story.append(Paragraph("LAPORAN RINGKASAN EKSEKUTIF PENELITIAN (EDISI v3 FINAL)", title_style))
-    story.append(Paragraph("Audit Forensik Target Leakage, Replikasi Presisi Baseline Kakak Kelas, & Standarisasi Model Klinis Murni (Kohort PIMA)", subtitle_style))
+    story.append(Paragraph("LAPORAN RINGKASAN EKSEKUTIF RISET (EDISI v3 FINAL)", title_style))
+    story.append(Paragraph("Audit Forensik Target Leakage, Replikasi Presisi Baseline, & Standarisasi Metodologi Klinis Murni (Kohort PIMA)", subtitle_style))
 
     meta_data = [
         [
-            Paragraph("<b>Peneliti / Mahasiswa:</b> Mitchel Mohamad Affandi<br/>"
-                      "<b>Dosen Pembimbing:</b> Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.<br/>"
-                      "<b>Status Dokumen:</b> Final, Sah & Terkunci (Sidang TA & Jurnal Internasional)", meta_style),
-            Paragraph("<b>Target Luaran:</b> Paper Jurnal Internasional Bereputasi (Q1/Q2)<br/>"
+            Paragraph("<b>Peneliti / Penulis Utama:</b> Mitchel Mohamad Affandi<br/>"
+                      "<b>Dosen Pembimbing / Co-Author:</b> Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.<br/>"
+                      "<b>Tujuan Dokumen:</b> Basis Riset & Briefing Naskah Konferensi Baru", meta_style),
+            Paragraph("<b>Target Luaran:</b> Paper Konferensi Internasional (IEEE / Scopus)<br/>"
                       "<b>Protokol Resmi:</b> v3/PROTOCOL.md (Amendemen 1 & 2 Terdaftar Apriori)<br/>"
                       "<b>Repositori GitHub:</b> <code>mitcheltastic/DiabeticAnalysis</code> (Cabang <code>main</code>)", meta_style)
         ]
@@ -236,9 +238,9 @@ def build_pdf(filename="EXECUTIVE_SUMMARY_REPORT_V3.pdf"):
     story.append(t_meta)
     story.append(Spacer(1, 4))
 
-    story.append(Paragraph("1. Ringkasan Eksekutif & Jawaban Inti: Mengapa Edisi v3 Jauh Lebih Unggul & Defensibel", h1_style))
+    story.append(Paragraph("1. Ringkasan Eksekutif: Nilai Jual Ilmiah & Relevansi Paper Konferensi Baru", h1_style))
     story.append(Paragraph(
-        "Dalam riset machine learning biomedis, <b>kebenaran metodologis adalah mahkota tertinggi</b>. Angka akurasi tinggi yang dibangun di atas fondasi kebocoran data (<i>target leakage</i>) atau penalaan pada data uji (<i>test-set tuning</i>) adalah ilusi yang langsung runtuh di hadapan penguji sidang maupun peer reviewer internasional. Edisi v3 ini menyempurnakan seluruh siklus penelitian menjadi <b>benteng pembuktian ilmiah yang kedap air (airtight)</b>:",
+        "Dalam riset biomedical machine learning, <b>kebenaran metodologis dan kebaruan audit forensik adalah nilai jual ilmiah tertinggi</b>. Angka akurasi tinggi yang dibangun di atas kebocoran data (<i>target leakage</i>) atau penalaan pada data uji (<i>test-set tuning</i>) adalah ilusi yang langsung runtuh di hadapan peer reviewer internasional. Makalah yang berhasil mereplikasi hasil terdahulu, membongkar kebocoran data secara matematis, dan menegakkan standar pengujian murni memiliki <b>posisi ilmiah prestisius dan potensi sitasi tinggi</b>. Edisi v3 menyempurnakan seluruh siklus riset menjadi <b>benteng ilmiah yang kedap air (airtight)</b>:",
         body_style
     ))
 
@@ -688,7 +690,7 @@ def build_pdf(filename="EXECUTIVE_SUMMARY_REPORT_V3.pdf"):
     story.append(Paragraph("<b>Kesimpulan Biologis:</b> Glukosa dan BMI menguasai peringkat 1 dan 2 pada 100% bootstrap refits di seluruh arsitektur model. Insulin terpuruk di peringkat 5-6 (hanya 1.0% masuk Top-3). Dominasi insulin pada karya terdahulu murni artefak kebocoran data.", body_style))
 
     # =========================================================================
-    # HALAMAN 4: AUDIT LOG 12 KOREKSI, 5 ARGUMEN SIDANG, & KESIAPAN REPO
+    # HALAMAN 4: AUDIT LOG 12 KOREKSI, 5 ARGUMEN PAPER, & KESIAPAN REPO
     # =========================================================================
     story.append(PageBreak())
 
@@ -792,15 +794,15 @@ def build_pdf(filename="EXECUTIVE_SUMMARY_REPORT_V3.pdf"):
     story.append(t_corr)
     story.append(Spacer(1, 4))
 
-    story.append(Paragraph("9. Lima Argumen Emas Menghadapi Dosen Pembimbing & Dewan Penguji", h1_style))
+    story.append(Paragraph("9. Lima Kontribusi Inti Paper Konferensi & Panduan Menjawab Reviewer", h1_style))
     pilar_box = [
         [Paragraph(
-            "<b>Jika Penguji Bertanya: 'Kenapa Akurasi Akhir 76% - 77%, Bukan 85% - 87% Seperti Paper Kakak Kelas?'</b><br/>"
-            "1. <b>Replikasi Presisi Sempurna:</b> Kita membuktikan eksak asal-usul angka 85.06% (Paper 1, matriks 90,10,13,41) dan 87.01% (Paper 2, matriks 92,8,12,42 via test tuning). Kita tahu persis bagaimana angka tercipta.<br/>"
+            "<b>Jika Reviewer Konferensi Bertanya: 'Mengapa Akurasi Akhir 76% - 77%, Bukan 85% - 87% Seperti Paper Terdahulu?'</b><br/>"
+            "1. <b>Replikasi Presisi Sempurna:</b> Kita membuktikan eksak asal-usul angka 85.06% (Paper 1, matriks 90,10,13,41) dan 87.01% (Paper 2, matriks 92,8,12,42 via test tuning). Kita membuktikan angka tersebut dapat direproduksi secara deterministik.<br/>"
             "2. <b>Bukti Matematis Kebocoran Target:</b> Angka tinggi tersebut hanya terjadi pada file RLTR di mana insulinnya disuntik label target (OLS t = 26.77, p = 3.97e-88).<br/>"
-            "3. <b>Model Kakak Kelas Runtuh pada Pasien Nyata:</b> Pada pasien berinsulin asli laboratorium, performa RLTR anjlok 16.25 pp (p < 10^-8). Sebaliknya, model LogReg leak-free kita mengalahkan model RLTR sebesar +0.0386 AUC (p = 0.0295) pada data biologis riil!<br/>"
-            "4. <b>Standar Emas Kedokteran:</b> Riset ini memenuhi standar metodologis tertinggi: 100-seed split, 50-fold nested CV, uji Nadeau-Bengio, uji TOST, kalibrasi probabilitas, dan DCA.<br/>"
-            "5. <b>Menyelamatkan Literatur Ilmiah:</b> Mengungkap <i>target leakage</i> dan menegakkan benchmark murni adalah kontribusi ilmiah langka bernilai tinggi yang sangat dicari jurnal internasional bereputasi.",
+            "3. <b>Model Literatur Terdahulu Runtuh pada Pasien Nyata (Headline Finding):</b> Pada pasien berinsulin asli laboratorium, performa RLTR anjlok 16.25 pp (p < 10^-8). Sebaliknya, model LogReg leak-free kita mengalahkan model RLTR sebesar +0.0386 AUC (p = 0.0295) pada data biologis riil!<br/>"
+            "4. <b>Standar Emas Metodologis Internasional:</b> Riset ini memenuhi standar kedokteran dan informatika tertinggi: 100-seed split, 50-fold nested CV, uji Nadeau-Bengio, uji TOST, kalibrasi probabilitas, dan DCA.<br/>"
+            "5. <b>Menyelamatkan Literatur Ilmiah (High Novelty):</b> Mengungkap <i>target leakage</i> dan menegakkan benchmark murni adalah kontribusi ilmiah langka bernilai tinggi yang sangat dicari konferensi dan jurnal internasional bereputasi.",
             callout_style
         )]
     ]
@@ -816,7 +818,7 @@ def build_pdf(filename="EXECUTIVE_SUMMARY_REPORT_V3.pdf"):
     story.append(t_pilar)
     story.append(Spacer(1, 3))
     story.append(Paragraph(
-        "<b>Status Kesiapan Teknis Repositori:</b> Seluruh eksperimen v3 (E1-E7) didukung oleh skrip deterministik di <code>v3/scripts/</code>, data lengkap di <code>v3/results/</code>, dan grafik resolusi tinggi di <code>v3/figures/</code>. Kode teruji 100% reproduktif pada Python 3.12.",
+        "<b>Status Kesiapan Teknis Repositori:</b> Seluruh eksperimen v3 (E1-E7) didukung oleh skrip deterministik di <code>v3/scripts/</code>, data lengkap di <code>v3/results/</code>, dan grafik resolusi tinggi di <code>v3/figures/</code>. Dokumen ini siap menjadi acuan penulisan naskah paper konferensi IEEE.",
         body_style
     ))
 
@@ -826,7 +828,7 @@ def build_pdf(filename="EXECUTIVE_SUMMARY_REPORT_V3.pdf"):
     story.append(PageBreak())
 
     story.append(Paragraph("10. Lampiran Galeri Visual Ilmiah Utama (Key Visual Exhibits v3)", h1_style))
-    story.append(Paragraph("Berikut adalah 5 visualisasi resolusi tinggi dari folder <code>v3/figures/</code> yang siap dipresentasikan di sidang tugas akhir:", body_style))
+    story.append(Paragraph("Berikut adalah 5 visualisasi resolusi tinggi dari folder <code>v3/figures/</code> yang siap digunakan sebagai gambar utama (camera-ready figures) pada naskah paper konferensi:", body_style))
     story.append(Spacer(1, 3))
 
     # Exhibit 1: Waterfall
