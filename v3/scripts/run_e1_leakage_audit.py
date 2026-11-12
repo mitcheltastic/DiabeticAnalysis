@@ -143,9 +143,80 @@ for name, filename in imputed_files.items():
         sub_skin, "SkinThickness", ["Glucose", "BMI"], all_covariates_skin, name, f"Missing_SkinThickness (N={n_mis_skin})"
     ))
 
+# ------------------------------------------------------------------------------
+# 3B. REPLACEMENT TEST: LISTWISE DELETION PARTIAL CORRELATIONS (RAW COVARIATES)
+# ------------------------------------------------------------------------------
+print("\n>>> Computing Listwise Deletion Partial Correlations (Raw Feature Controls)...")
+raw_nan_leak = raw.copy()
+for col in ["Glucose", "BloodPressure", "SkinThickness", "Insulin", "BMI"]:
+    raw_nan_leak[col] = raw_nan_leak[col].replace(0, np.nan)
+
+# 1. Missing Insulin: control for all 7 raw covariates
+covars_ins_raw = ["Pregnancies", "Glucose", "BloodPressure", "SkinThickness", "BMI", "DiabetesPedigreeFunction", "Age"]
+df_ins_test = raw_nan_leak.loc[m_ins, covars_ins_raw + ["Outcome"]].copy()
+
+# 2. Missing SkinThickness: control for 6 raw covariates EXCLUDING Insulin
+covars_skin_no_ins = ["Pregnancies", "Glucose", "BloodPressure", "BMI", "DiabetesPedigreeFunction", "Age"]
+df_skin_test = raw_nan_leak.loc[m_skin, covars_skin_no_ins + ["Outcome"]].copy()
+
+for name, filename in imputed_files.items():
+    df_imp = pd.read_csv(filename)
+    
+    # A. Insulin
+    df_ins_test["Insulin_imp"] = df_imp.loc[m_ins, "Insulin"]
+    valid_ins = df_ins_test.dropna()
+    N_used_ins = len(valid_ins)
+    rx_ins = sm.OLS(valid_ins["Insulin_imp"], sm.add_constant(valid_ins[covars_ins_raw])).fit().resid
+    ry_ins = sm.OLS(valid_ins["Outcome"], sm.add_constant(valid_ins[covars_ins_raw])).fit().resid
+    r_part_ins, p_part_ins = stats.pearsonr(rx_ins, ry_ins)
+    r_biv_ins, p_biv_ins = stats.pearsonr(valid_ins["Insulin_imp"], valid_ins["Outcome"])
+    
+    audit_records.append({
+        "dataset": name,
+        "attribute": "Insulin",
+        "subset": f"Missing_Insulin_Listwise_7RawCovars (N={N_used_ins})",
+        "n_samples": N_used_ins,
+        "ols_beta_base": np.nan,
+        "ols_t_base": np.nan,
+        "ols_p_base": np.nan,
+        "partial_r": float(r_part_ins),
+        "partial_p": float(p_part_ins),
+        "bivariate_r": float(r_biv_ins),
+        "bivariate_p": float(p_biv_ins),
+        "ols_beta_all": np.nan,
+        "ols_t_all": np.nan,
+        "ols_p_all": np.nan
+    })
+    
+    # B. SkinThickness
+    df_skin_test["Skin_imp"] = df_imp.loc[m_skin, "SkinThickness"]
+    valid_skin = df_skin_test.dropna()
+    N_used_skin = len(valid_skin)
+    rx_skin = sm.OLS(valid_skin["Skin_imp"], sm.add_constant(valid_skin[covars_skin_no_ins])).fit().resid
+    ry_skin = sm.OLS(valid_skin["Outcome"], sm.add_constant(valid_skin[covars_skin_no_ins])).fit().resid
+    r_part_skin, p_part_skin = stats.pearsonr(rx_skin, ry_skin)
+    r_biv_skin, p_biv_skin = stats.pearsonr(valid_skin["Skin_imp"], valid_skin["Outcome"])
+    
+    audit_records.append({
+        "dataset": name,
+        "attribute": "SkinThickness",
+        "subset": f"Missing_Skin_Listwise_6RawCovars_NoIns (N={N_used_skin})",
+        "n_samples": N_used_skin,
+        "ols_beta_base": np.nan,
+        "ols_t_base": np.nan,
+        "ols_p_base": np.nan,
+        "partial_r": float(r_part_skin),
+        "partial_p": float(p_part_skin),
+        "bivariate_r": float(r_biv_skin),
+        "bivariate_p": float(p_biv_skin),
+        "ols_beta_all": np.nan,
+        "ols_t_all": np.nan,
+        "ols_p_all": np.nan
+    })
+
 df_audit = pd.DataFrame(audit_records)
 df_audit.to_csv("v3/results/E1_leakage_all_files.csv", index=False)
-print("Saved complete audit table to: v3/results/E1_leakage_all_files.csv")
+print("Saved complete audit table (including listwise deletion controls) to: v3/results/E1_leakage_all_files.csv")
 
 # ------------------------------------------------------------------------------
 # 4. ROW-LEVEL AGREEMENT OF CLASS-CONDITIONAL RLTR RECONSTRUCTION vs RLTR_IMPUTED

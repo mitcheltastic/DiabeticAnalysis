@@ -270,23 +270,44 @@ for s_idx, s in enumerate(seeds):
     study_r4 = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=42))
     study_r4.optimize(obj_test_r4, n_trials=100)
     
-    best_acc_r4 = float(study_r4.best_value)
-    best_params_r4 = study_r4.best_params
-    best_clf_r4 = XGBClassifier(**best_params_r4, random_state=42, eval_metric="logloss", n_jobs=4)
-    best_clf_r4.fit(X_tr_rltr_3a, y_tr)
-    prob_r4 = best_clf_r4.predict_proba(X_te_rltr_3a)[:, 1]
-    best_auc_r4 = float(roc_auc_score(y_te, prob_r4))
+    # 1. R4-50: Best of the first 50 trials (exact budget parity with R4')
+    trials_50 = [t for t in study_r4.trials if t.number < 50 and t.value is not None]
+    best_t_50 = max(trials_50, key=lambda t: t.value)
+    best_acc_r4_50 = float(best_t_50.value)
+    best_params_r4_50 = best_t_50.params
+    clf_r4_50 = XGBClassifier(**best_params_r4_50, random_state=42, eval_metric="logloss", n_jobs=4)
+    clf_r4_50.fit(X_tr_rltr_3a, y_tr)
+    best_auc_r4_50 = float(roc_auc_score(y_te, clf_r4_50.predict_proba(X_te_rltr_3a)[:, 1]))
     
-    seed_row["R4_acc"] = best_acc_r4
-    seed_row["R4_auc"] = best_auc_r4
+    seed_row["R4_50_acc"] = best_acc_r4_50
+    seed_row["R4_50_auc"] = best_auc_r4_50
+    
+    # 2. R4-100: Best over all 100 trials
+    best_acc_r4_100 = float(study_r4.best_value)
+    best_params_r4_100 = study_r4.best_params
+    clf_r4_100 = XGBClassifier(**best_params_r4_100, random_state=42, eval_metric="logloss", n_jobs=4)
+    clf_r4_100.fit(X_tr_rltr_3a, y_tr)
+    best_auc_r4_100 = float(roc_auc_score(y_te, clf_r4_100.predict_proba(X_te_rltr_3a)[:, 1]))
+    
+    seed_row["R4_100_acc"] = best_acc_r4_100
+    seed_row["R4_100_auc"] = best_auc_r4_100
+    seed_row["R4_acc"] = best_acc_r4_100
+    seed_row["R4_auc"] = best_auc_r4_100
     
     if s == 42:
-        seed42_details["R4_Tuned_Test"] = {
+        seed42_details["R4_50_Tuned_Test"] = {
             "file": "RLTR",
-            "variant": "R4 (Direct Test Set Tuned, 100 trials)",
-            "accuracy": best_acc_r4,
-            "roc_auc": best_auc_r4,
-            "cm": confusion_matrix(y_te, best_clf_r4.predict(X_te_rltr_3a)).tolist()
+            "variant": "R4-50 (Direct Test Set Tuned, 50 trials)",
+            "accuracy": best_acc_r4_50,
+            "roc_auc": best_auc_r4_50,
+            "cm": confusion_matrix(y_te, clf_r4_50.predict(X_te_rltr_3a)).tolist()
+        }
+        seed42_details["R4_100_Tuned_Test"] = {
+            "file": "RLTR",
+            "variant": "R4-100 (Direct Test Set Tuned, 100 trials)",
+            "accuracy": best_acc_r4_100,
+            "roc_auc": best_auc_r4_100,
+            "cm": confusion_matrix(y_te, clf_r4_100.predict(X_te_rltr_3a)).tolist()
         }
 
     # --------------------------------------------------------------------------
@@ -361,7 +382,8 @@ ladder_rungs = [
     ("R3a_TR", "R3a_TR_acc", "R3a_TR_auc", "TR file as published (zeros intact) + pre-split MinMax"),
     ("R3b_TR", "R3b_TR_acc", "R3b_TR_auc", "TR file with in-fold glucose fix + MinMax"),
     ("R4_Prime_Honest_Tuned", "R4_prime_acc", "R4_prime_auc", "R3a + Optuna 50 trials maximizing 5-fold CV on train only"),
-    ("R4_Direct_Test_Tuned", "R4_acc", "R4_auc", "R3a + Optuna 100 trials directly maximizing test accuracy"),
+    ("R4_50_Direct_Test_Tuned", "R4_50_acc", "R4_50_auc", "R3a + Optuna 50 trials directly maximizing test accuracy (budget parity with R4')"),
+    ("R4_100_Direct_Test_Tuned", "R4_100_acc", "R4_100_auc", "R3a + Optuna 100 trials directly maximizing test accuracy"),
 ]
 
 summary_records = []
@@ -450,8 +472,9 @@ plot_rungs = [
     ("R2 (+Global MICE)", "R2_Global_MICE"),
     ("R3a (RLTR As-Is)", "R3a_RLTR_Published"),
     ("R3b (RLTR GlucFix)", "R3b_RLTR_GlucoseFix"),
-    ("R4' (Honest Tuned)", "R4_Prime_Honest_Tuned"),
-    ("R4 (Test Tuned)", "R4_Direct_Test_Tuned"),
+    ("R4' (Honest Tuned 50)", "R4_Prime_Honest_Tuned"),
+    ("R4-50 (Test Tuned 50)", "R4_50_Direct_Test_Tuned"),
+    ("R4-100 (Test Tuned 100)", "R4_100_Direct_Test_Tuned"),
     ("R5 (Seed Selection)", "R5_Selection_Effect")
 ]
 
@@ -468,7 +491,7 @@ auc_means = sub_summary["auc_mean"].values
 auc_sds = sub_summary["auc_std"].values
 auc_seed42 = sub_summary["auc_seed42"].values
 
-colors = ["#2b5c8f", "#41729f", "#588bae", "#d95f02", "#f1a340", "#998ec3", "#e7298a", "#7570b3"]
+colors = ["#2b5c8f", "#41729f", "#588bae", "#d95f02", "#f1a340", "#998ec3", "#bc80bd", "#e7298a", "#7570b3"]
 
 # Panel 1: Accuracy
 ax1.bar(range(len(x_labels)), acc_means, yerr=acc_sds, capsize=4, color=colors, alpha=0.85, edgecolor="black", linewidth=1)
