@@ -3,6 +3,7 @@
 - **Investigator / Student**: Mitchel Mohamad Affandi
 - **Principal Investigator / Supervisor**: Dr. R. Yunendah Nur Fu'adah, S.T., M.T., Ph.D.
 - **Protocol Version**: 3.0 (Pre-registered)
+- **Git Commit Hash**: `ed854740205b9c816df909c699635d03ba7f3b99`
 - **Date**: November 2026
 - **Status**: Registered & Locked Prior to Execution
 
