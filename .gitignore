@@ -3,6 +3,7 @@
 # ========================
 *.csv
 !v2/results/*.csv
+!v3/results/*.csv
 
 # ========================
 # Python Virtual Environment
