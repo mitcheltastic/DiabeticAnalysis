@@ -159,6 +159,7 @@ df_ins_test = raw_nan_leak.loc[m_ins, covars_ins_raw + ["Outcome"]].copy()
 covars_skin_no_ins = ["Pregnancies", "Glucose", "BloodPressure", "BMI", "DiabetesPedigreeFunction", "Age"]
 df_skin_test = raw_nan_leak.loc[m_skin, covars_skin_no_ins + ["Outcome"]].copy()
 
+listwise_records = []
 for name, filename in imputed_files.items():
     df_imp = pd.read_csv(filename)
     
@@ -171,7 +172,7 @@ for name, filename in imputed_files.items():
     r_part_ins, p_part_ins = stats.pearsonr(rx_ins, ry_ins)
     r_biv_ins, p_biv_ins = stats.pearsonr(valid_ins["Insulin_imp"], valid_ins["Outcome"])
     
-    audit_records.append({
+    listwise_records.append({
         "dataset": name,
         "attribute": "Insulin",
         "subset": f"Missing_Insulin_Listwise_7RawCovars (N={N_used_ins})",
@@ -197,7 +198,7 @@ for name, filename in imputed_files.items():
     r_part_skin, p_part_skin = stats.pearsonr(rx_skin, ry_skin)
     r_biv_skin, p_biv_skin = stats.pearsonr(valid_skin["Skin_imp"], valid_skin["Outcome"])
     
-    audit_records.append({
+    listwise_records.append({
         "dataset": name,
         "attribute": "SkinThickness",
         "subset": f"Missing_Skin_Listwise_6RawCovars_NoIns (N={N_used_skin})",
@@ -214,9 +215,89 @@ for name, filename in imputed_files.items():
         "ols_p_all": np.nan
     })
 
+# Holm-Bonferroni correction across the 10 listwise tests
+sys.path.append(os.path.abspath("v3/scripts"))
+from stats_utils import holm_bonferroni
+p_vals_listwise = [r["partial_p"] for r in listwise_records]
+adj_p_listwise = holm_bonferroni(p_vals_listwise)
+for r, ap in zip(listwise_records, adj_p_listwise):
+    r["holm_adjusted_p"] = float(ap)
+audit_records.extend(listwise_records)
+
+# ------------------------------------------------------------------------------
+# 3C. SENSITIVITY ANALYSIS: ALL MISSING ROWS (MEDIAN-FILLED COVARIATES, NO OUTCOME)
+# ------------------------------------------------------------------------------
+print(">>> Computing Sensitivity Analysis on ALL Missing Rows (Cohort Median Covariates)...")
+raw_filled = raw_nan_leak.copy()
+medians_all = raw_nan_leak[covars_ins_raw].median()
+for col in covars_ins_raw:
+    raw_filled[col] = raw_filled[col].fillna(medians_all[col])
+
+sens_records = []
+for name, filename in imputed_files.items():
+    df_imp = pd.read_csv(filename)
+    
+    # A. Insulin on all 374 missing rows
+    ins_imp = df_imp.loc[m_ins, "Insulin"]
+    X_ins_sens = raw_filled.loc[m_ins, covars_ins_raw]
+    y_ins_sens = raw_filled.loc[m_ins, "Outcome"]
+    rx_i = sm.OLS(ins_imp, sm.add_constant(X_ins_sens)).fit().resid
+    ry_i = sm.OLS(y_ins_sens, sm.add_constant(X_ins_sens)).fit().resid
+    r_i, p_i = stats.pearsonr(rx_i, ry_i)
+    r_biv_i, p_biv_i = stats.pearsonr(ins_imp, y_ins_sens)
+    
+    sens_records.append({
+        "dataset": name,
+        "attribute": "Insulin",
+        "subset": f"Missing_Insulin_Sensitivity_MedianCovars (N={n_mis_ins})",
+        "n_samples": n_mis_ins,
+        "ols_beta_base": np.nan,
+        "ols_t_base": np.nan,
+        "ols_p_base": np.nan,
+        "partial_r": float(r_i),
+        "partial_p": float(p_i),
+        "bivariate_r": float(r_biv_i),
+        "bivariate_p": float(p_biv_i),
+        "ols_beta_all": np.nan,
+        "ols_t_all": np.nan,
+        "ols_p_all": np.nan
+    })
+    
+    # B. SkinThickness on all 227 missing rows (no insulin)
+    skin_imp = df_imp.loc[m_skin, "SkinThickness"]
+    X_skin_sens = raw_filled.loc[m_skin, covars_skin_no_ins]
+    y_skin_sens = raw_filled.loc[m_skin, "Outcome"]
+    rx_s = sm.OLS(skin_imp, sm.add_constant(X_skin_sens)).fit().resid
+    ry_s = sm.OLS(y_skin_sens, sm.add_constant(X_skin_sens)).fit().resid
+    r_s, p_s = stats.pearsonr(rx_s, ry_s)
+    r_biv_s, p_biv_s = stats.pearsonr(skin_imp, y_skin_sens)
+    
+    sens_records.append({
+        "dataset": name,
+        "attribute": "SkinThickness",
+        "subset": f"Missing_Skin_Sensitivity_MedianCovars_NoIns (N={n_mis_skin})",
+        "n_samples": n_mis_skin,
+        "ols_beta_base": np.nan,
+        "ols_t_base": np.nan,
+        "ols_p_base": np.nan,
+        "partial_r": float(r_s),
+        "partial_p": float(p_s),
+        "bivariate_r": float(r_biv_s),
+        "bivariate_p": float(p_biv_s),
+        "ols_beta_all": np.nan,
+        "ols_t_all": np.nan,
+        "ols_p_all": np.nan
+    })
+
+p_vals_sens = [r["partial_p"] for r in sens_records]
+adj_p_sens = holm_bonferroni(p_vals_sens)
+for r, ap in zip(sens_records, adj_p_sens):
+    r["holm_adjusted_p"] = float(ap)
+audit_records.extend(sens_records)
+
 df_audit = pd.DataFrame(audit_records)
 df_audit.to_csv("v3/results/E1_leakage_all_files.csv", index=False)
-print("Saved complete audit table (including listwise deletion controls) to: v3/results/E1_leakage_all_files.csv")
+print("Saved complete audit table (including listwise and median-filled sensitivity) to: v3/results/E1_leakage_all_files.csv")
 
 # ------------------------------------------------------------------------------
 # 4. ROW-LEVEL AGREEMENT OF CLASS-CONDITIONAL RLTR RECONSTRUCTION vs RLTR_IMPUTED

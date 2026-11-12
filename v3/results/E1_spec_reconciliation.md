@@ -93,10 +93,5 @@ To rigorously evaluate the relationship between the published LTR (Limited Toler
 
 ### 3.2 Evaluation of the $0.5299$ Value
 
-The numerical proximity between the bivariate correlation of LTR insulin ($r = 0.529901$) and the linear ceiling on raw features ($R_{\max} = 0.529933$) is not an arbitrary coincidence, nor is it attributable to a parametric trend model (LTR denotes Limited Tolerance Relation, a rough-set method). 
-
-Rather, the data demonstrate that:
-1. Imputed insulin in the LTR file is highly collinear with the 7 non-target features ($R^2 = 0.931$).
-2. The standardized feature weights in LTR insulin align closely with the optimal OLS weights for predicting Outcome (cosine similarity $= 0.916$).
-3. Consequently, LTR insulin correlates at $r = 0.9086$ with the optimal linear predictor $\hat{y}$. By Cauchy-Schwarz inequality, any linear combination $Z = \mathbf{w}^T X$ satisfies $r(Z, Y) \le R_{\max}$. Because the effective weights in LTR insulin closely mirror the OLS solution, $r(\text{Insulin}_{\text{LTR}}, Y)$ reaches within $0.000032$ of the raw linear ceiling. On LTR-imputed features themselves, the linear ceiling is $0.5374$.
+LTR-imputed insulin is largely a linear function of the other features ($R^2 = 0.93$). With all seven covariates controlled, LTR-imputed insulin shows no association with Outcome (partial r = -0.03, p = 0.76); the earlier Glucose/BMI-only partial correlation (0.186) is explained by the other covariates. The four-decimal match with the raw-feature linear bound is coincidental.
 
