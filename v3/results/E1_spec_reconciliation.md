@@ -52,19 +52,51 @@ This table details the exact mathematical parameterization of the OLS models eva
 
 ---
 
-## 3. Recomputation of Theoretical Linear Upper Bound ($R_{\max}$)
+## 3. Recomputation of Theoretical Linear Upper Bound ($R_{\max}$) & LTR Diagnostics
 
 The theoretical maximum linear multiple correlation obtainable for `Outcome` from the remaining 7 clinical features ($X$) is defined as:
 $$R_{\max} = \sqrt{\mathbf{r}_{YX}^T \mathbf{R}_{XX}^{-1} \mathbf{r}_{YX}} = \sqrt{R^2}$$
 where $\mathbf{r}_{YX}$ is the vector of bivariate correlations between Outcome and the 7 non-target features, and $\mathbf{R}_{XX}$ is their correlation matrix.
 
-### Numerical Evaluation:
-1. **On Missing-Insulin Rows ($N=374$)**:
-   $$R_{\max} = 0.529933$$
-2. **On All Rows ($N=768$)**:
-   $$R_{\max} = 0.549473$$
-3. **Bivariate Correlation of `LTR_Imputed.csv` on Missing Rows**:
-   $$r(\text{Insulin}_{\text{LTR}}, \text{Outcome}) = 0.529901$$
+### 3.1 Empirical Diagnostics on Missing-Insulin Rows ($N=374$)
 
-### Reconciliation with Phase 2 Footnote:
-The value $0.5299$ reported in the Phase 2 footnote corresponds to both the linear ceiling $R_{\max}$ on the missing-insulin subset ($0.529933$) and the bivariate correlation observed in `LTR_Imputed.csv` ($0.529901$). This numerical equivalence is an exact mathematical property of Linear Trend Regression (LTR): LTR imputes missing values as a linear projection of the non-target covariates, so its correlation with the target variable converges to the multiple correlation coefficient of that linear model.
+To rigorously evaluate the relationship between the published LTR (Limited Tolerance Relation) imputed insulin and the theoretical linear ceiling, empirical diagnostics were conducted on the $N=374$ missing-insulin instances:
+
+1. **Regression of LTR Imputed Insulin on the 7 Non-Target Features**:
+   * Evaluated using the published LTR file's feature values (`LTR_Imputed.csv`, where other missing attributes such as SkinThickness were imputed via LTR):
+     $$R^2 = 0.930889$$
+   * Evaluated using raw features (`Dataset Diabetes.csv`, retaining unimputed zeros in SkinThickness/BloodPressure):
+     $$R^2 = 0.869603$$
+   * Result: Over $93\%$ of the variance of LTR-imputed insulin is linearly explained by the other 7 features in the LTR dataset.
+
+2. **OLS Regression of Outcome on the 7 Features**:
+   * On LTR-file features:
+     $$R^2 = 0.288834 \implies R_{\max} = \sqrt{R^2} = 0.537433$$
+   * On raw features (retaining zeros):
+     $$R^2 = 0.280829 \implies R_{\max} = \sqrt{R^2} = 0.529933$$
+
+3. **Coefficient Vector Alignment**:
+   * Standardized regression coefficients ($\mathbf{\beta}^*$) for LTR Insulin versus Outcome on the 7 standardized features:
+     $$\text{Cosine Similarity} = \frac{\mathbf{\beta}^*_{\text{Insulin}} \cdot \mathbf{\beta}^*_{\text{Outcome}}}{\|\mathbf{\beta}^*_{\text{Insulin}}\| \|\mathbf{\beta}^*_{\text{Outcome}}\|} = \mathbf{0.915679}$$
+   * The standardized weight vectors point in closely aligned directions across the feature space.
+
+4. **Independent Matrix Verification**:
+   * Computing $R_{\max} = \sqrt{\mathbf{r}_{YX}^T \mathbf{R}_{XX}^{-1} \mathbf{r}_{YX}}$ via independent matrix inversion:
+     * Using raw features with zeros: $R_{\max} = 0.5299326$
+     * Using LTR-file features: $R_{\max} = 0.5374329$
+
+5. **Correlation of LTR Insulin with Linear Outcome Predictor**:
+   * Let $\hat{y}_{\text{LTR}}$ denote the OLS fitted values of Outcome from the 7 LTR features:
+     $$r(\text{Insulin}_{\text{LTR}}, \hat{y}_{\text{LTR}}) = \mathbf{0.908589}$$
+   * Bivariate correlation of LTR insulin directly with Outcome:
+     $$r(\text{Insulin}_{\text{LTR}}, \text{Outcome}) = \mathbf{0.529901}$$
+
+### 3.2 Evaluation of the $0.5299$ Value
+
+The numerical proximity between the bivariate correlation of LTR insulin ($r = 0.529901$) and the linear ceiling on raw features ($R_{\max} = 0.529933$) is not an arbitrary coincidence, nor is it attributable to a parametric trend model (LTR denotes Limited Tolerance Relation, a rough-set method). 
+
+Rather, the data demonstrate that:
+1. Imputed insulin in the LTR file is highly collinear with the 7 non-target features ($R^2 = 0.931$).
+2. The standardized feature weights in LTR insulin align closely with the optimal OLS weights for predicting Outcome (cosine similarity $= 0.916$).
+3. Consequently, LTR insulin correlates at $r = 0.9086$ with the optimal linear predictor $\hat{y}$. By Cauchy-Schwarz inequality, any linear combination $Z = \mathbf{w}^T X$ satisfies $r(Z, Y) \le R_{\max}$. Because the effective weights in LTR insulin closely mirror the OLS solution, $r(\text{Insulin}_{\text{LTR}}, Y)$ reaches within $0.000032$ of the raw linear ceiling. On LTR-imputed features themselves, the linear ceiling is $0.5374$.
+
