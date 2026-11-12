@@ -95,3 +95,22 @@ To rigorously evaluate the relationship between the published LTR (Limited Toler
 
 LTR-imputed insulin is largely a linear function of the other features ($R^2 = 0.93$). With all seven covariates controlled, LTR-imputed insulin shows no association with Outcome (partial r = -0.03, p = 0.76); the earlier Glucose/BMI-only partial correlation (0.186) is explained by the other covariates. The four-decimal match with the raw-feature linear bound is coincidental.
 
+---
+
+## 4. Replacement Test & Sensitivity Analysis Summary
+
+1. **Listwise Deletion Replacement Test (Raw Feature Controls)**:
+   - Evaluated controlling for all 7 raw features for Insulin ($N=140$) and 6 raw features excluding insulin for SkinThickness ($N=192$).
+   - `LTR`: Insulin $r = -0.0262$ [95% CI: $-0.1956, +0.1447$], $p_{\text{adj}} = 1.000$; SkinThickness $r = -0.0683$ [95% CI: $-0.2101, +0.0763$], $p_{\text{adj}} = 1.000$. Compatible with at most weak target dependency (95% CIs exclude $|r| \ge 0.20$).
+   - `NSSR`: Insulin $r = +0.0300$ [95% CI: $-0.1409, +0.1992$], $p_{\text{adj}} = 1.000$; SkinThickness $r = -0.0004$ [95% CI: $-0.1443, +0.1435$], $p_{\text{adj}} = 1.000$. Compatible with at most weak target dependency (95% CIs exclude $|r| \ge 0.20$).
+   - `TR`: Insulin $r = +0.1306$ [95% CI: $-0.0405, +0.2943$], $p_{\text{adj}} = 0.620$ (no detectable association in listwise); SkinThickness $r = +0.2513$ [95% CI: $+0.1115, +0.3814$], $p_{\text{adj}} = 0.0026$ (moderate association).
+   - `SIM`: Insulin $r = +0.3918$ [95% CI: $+0.2374, +0.5269$], $p_{\text{adj}} = 1.35 \times 10^{-5}$; SkinThickness $r = +0.3261$ [95% CI: $+0.1912, +0.4489$], $p_{\text{adj}} = 2.74 \times 10^{-5}$ (moderate association).
+   - `RLTR`: Insulin $r = +0.8653$ [95% CI: $+0.8151, +0.9026$], $p_{\text{adj}} = 3.22 \times 10^{-42}$; SkinThickness $r = +0.6206$ [95% CI: $+0.5235, +0.7018$], $p_{\text{adj}} = 7.12 \times 10^{-21}$ (strong association).
+
+2. **Sensitivity Analysis on Full Cohort (Median-Filled Covariates)**:
+   - On all missing instances ($N=374$ for Insulin, $N=227$ for SkinThickness):
+     - `LTR` and `NSSR` confirmed with no detectable association ($p_{\text{adj}} > 0.50$).
+     - `SIM` confirmed with moderate association ($r \approx 0.26 - 0.32, p_{\text{adj}} < 10^{-5}$).
+     - `RLTR` confirmed with strong association ($r = +0.7812$ and $+0.6480, p_{\text{adj}} < 10^{-26}$).
+     - `TR` Insulin: Discordant: not significant in listwise ($N=140, r=0.13$), significant in full cohort ($N=374, r=0.25$). Sensitive to covariate handling. Median-filled covariates provide weaker adjustment than observed covariates, which can inflate partial correlations in the sensitivity analysis (LTR insulin rose from $-0.03$ to $+0.08$ under the same change).
+
