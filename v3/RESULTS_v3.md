@@ -287,3 +287,4 @@ Evaluated across 200 bootstrap refits on the 614 training rows and explained on 
 
 All historical discrepancies, parameter clarifications, and narrative updates from Phase 2/Phase 3 reports are documented in:
 - [CORRECTIONS_TO_V2.md](file:///d:/1.%20COLLEGE/1.%20HERE%20WE%20GO/8.%20TUGAS%20AKHIR/5.1%20EXTRA%20BANTU%20BU%20YUNEN/DiabeticAnalysis/v3/results/CORRECTIONS_TO_V2.md) (Items 1 through 12).
+
