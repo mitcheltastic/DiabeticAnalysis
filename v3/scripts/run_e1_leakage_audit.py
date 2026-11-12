@@ -150,7 +150,7 @@ print("Saved complete audit table to: v3/results/E1_leakage_all_files.csv")
 # ------------------------------------------------------------------------------
 # 4. ROW-LEVEL AGREEMENT OF CLASS-CONDITIONAL RLTR RECONSTRUCTION vs RLTR_IMPUTED
 # ------------------------------------------------------------------------------
-print("\n>>> Computing Row-Level Agreement for Class-Conditional RLTR Hypothesis Test...")
+print("\n>>> Computing Row-Level Agreement & Controls for Class-Conditional RLTR Hypothesis Test...")
 
 y_missing_ins = raw.loc[m_ins, "Outcome"].values
 provided_rltr_ins = df_rltr.loc[m_ins, "Insulin"].values
@@ -167,88 +167,139 @@ donors_norm = norm_df[~m_ins].copy()
 eps_grid = [0.10, 0.15, 0.20, 0.25]
 agreement_records = []
 
-# Spec 1: Euclidean Distance on MinMax-scaled Glucose and BMI (Phase 2 formulation)
-for eps in eps_grid:
-    reconstructed = []
-    fallback_count = 0
-    for idx, row in norm_df.iterrows():
-        if row["Insulin"] > 0:
-            continue
-        c_donors = donors_norm[donors_norm["Outcome"] == row["Outcome"]]
-        diffs = c_donors[["Glucose", "BMI"]] - row[["Glucose", "BMI"]]
-        dist = np.sqrt((diffs**2).sum(axis=1))
-        matches = c_donors.loc[dist <= eps, "Insulin"]
-        if len(matches) > 0:
-            reconstructed.append(matches.mean())
-        else:
-            fallback_count += 1
-            reconstructed.append(c_donors["Insulin"].median())
-            
-    rec_arr = np.array(reconstructed)
-    mad = float(np.mean(np.abs(rec_arr - provided_rltr_ins)))
-    rho, rho_p = stats.spearmanr(rec_arr, provided_rltr_ins)
-    r_target, _ = stats.pearsonr(rec_arr, y_missing_ins)
-    pct_5 = float(np.mean(np.abs(rec_arr - provided_rltr_ins) <= 5.0) * 100.0)
-    pct_10 = float(np.mean(np.abs(rec_arr - provided_rltr_ins) <= 10.0) * 100.0)
-    fallback_rate = float(fallback_count / len(rec_arr) * 100.0)
-    
-    agreement_records.append({
-        "specification": "Euclidean_Normalized",
-        "epsilon": eps,
-        "MAD_mg_dL": mad,
-        "spearman_rho": float(rho),
-        "target_correlation_r": float(r_target),
-        "pct_within_5mg_dL": pct_5,
-        "pct_within_10mg_dL": pct_10,
-        "fallback_count": fallback_count,
-        "fallback_rate_pct": fallback_rate
-    })
-
-# Spec 2: Relative Difference |a - b| / max(|a|, |b|) <= eps (Protocol Amendment 1 Item D)
-for eps in eps_grid:
-    reconstructed = []
-    fallback_count = 0
-    for idx, row in raw.iterrows():
-        if row["Insulin"] > 0:
-            continue
-        c_donors = donors_raw[donors_raw["Outcome"] == row["Outcome"]]
-        g_row, b_row = row["Glucose"], row["BMI"]
+for spec in ["Euclidean_Normalized", "Relative_Difference"]:
+    for eps in eps_grid:
+        rec_cc = []
+        rec_honest = []
+        fallback_cc = 0
+        fallback_h = 0
         
-        # Available similarity attributes
-        cond_g = np.abs(c_donors["Glucose"] - g_row) / np.maximum(c_donors["Glucose"], g_row) <= eps
-        cond_b = np.abs(c_donors["BMI"] - b_row) / np.maximum(c_donors["BMI"], b_row) <= eps
-        matches = c_donors.loc[cond_g & cond_b, "Insulin"]
+        for idx, row in raw.iterrows():
+            if row["Insulin"] > 0:
+                continue
+                
+            if spec == "Euclidean_Normalized":
+                row_norm = norm_df.loc[idx]
+                # 1. Class-Conditional
+                c_donors = donors_norm[donors_norm["Outcome"] == row["Outcome"]]
+                diff_cc = np.sqrt(((c_donors[["Glucose", "BMI"]] - row_norm[["Glucose", "BMI"]])**2).sum(axis=1))
+                matches_cc = c_donors.loc[diff_cc <= eps, "Insulin"]
+                if len(matches_cc) > 0:
+                    rec_cc.append(matches_cc.mean())
+                else:
+                    fallback_cc += 1
+                    rec_cc.append(c_donors["Insulin"].median())
+                    
+                # 2. Honest Control (unconditioned on Outcome)
+                diff_h = np.sqrt(((donors_norm[["Glucose", "BMI"]] - row_norm[["Glucose", "BMI"]])**2).sum(axis=1))
+                matches_h = donors_norm.loc[diff_h <= eps, "Insulin"]
+                if len(matches_h) > 0:
+                    rec_honest.append(matches_h.mean())
+                else:
+                    fallback_h += 1
+                    rec_honest.append(donors_norm["Insulin"].median())
+            else:
+                # Relative Difference
+                g_row, b_row = row["Glucose"], row["BMI"]
+                # 1. Class-Conditional
+                c_donors = donors_raw[donors_raw["Outcome"] == row["Outcome"]]
+                cond_g_cc = np.abs(c_donors["Glucose"] - g_row) / np.maximum(c_donors["Glucose"], g_row) <= eps
+                cond_b_cc = np.abs(c_donors["BMI"] - b_row) / np.maximum(c_donors["BMI"], b_row) <= eps
+                matches_cc = c_donors.loc[cond_g_cc & cond_b_cc, "Insulin"]
+                if len(matches_cc) > 0:
+                    rec_cc.append(matches_cc.mean())
+                else:
+                    fallback_cc += 1
+                    rec_cc.append(c_donors["Insulin"].median())
+                    
+                # 2. Honest Control (unconditioned on Outcome)
+                cond_g_h = np.abs(donors_raw["Glucose"] - g_row) / np.maximum(donors_raw["Glucose"], g_row) <= eps
+                cond_b_h = np.abs(donors_raw["BMI"] - b_row) / np.maximum(donors_raw["BMI"], b_row) <= eps
+                matches_h = donors_raw.loc[cond_g_h & cond_b_h, "Insulin"]
+                if len(matches_h) > 0:
+                    rec_honest.append(matches_h.mean())
+                else:
+                    fallback_h += 1
+                    rec_honest.append(donors_raw["Insulin"].median())
+                    
+        rec_cc = np.array(rec_cc)
+        rec_honest = np.array(rec_honest)
         
-        if len(matches) > 0:
-            reconstructed.append(matches.mean())
-        else:
-            fallback_count += 1
-            reconstructed.append(c_donors["Insulin"].median())
+        # Primary comparison: Class-Conditional vs RLTR file
+        mad_cc = float(np.mean(np.abs(rec_cc - provided_rltr_ins)))
+        rho_cc, _ = stats.spearmanr(rec_cc, provided_rltr_ins)
+        r_target_cc, _ = stats.pearsonr(rec_cc, y_missing_ins)
+        pct5_cc = float(np.mean(np.abs(rec_cc - provided_rltr_ins) <= 5.0) * 100.0)
+        pct10_cc = float(np.mean(np.abs(rec_cc - provided_rltr_ins) <= 10.0) * 100.0)
+        
+        # Win rate per row: CC vs Honest closer to file
+        diff_cc_prov = np.abs(rec_cc - provided_rltr_ins)
+        diff_h_prov = np.abs(rec_honest - provided_rltr_ins)
+        cc_wins = float(np.mean(diff_cc_prov < diff_h_prov) * 100.0)
+        h_wins = float(np.mean(diff_h_prov < diff_cc_prov) * 100.0)
+        ties = float(np.mean(diff_cc_prov == diff_h_prov) * 100.0)
+        
+        agreement_records.append({
+            "comparison": "Class_Conditional_vs_RLTR_File",
+            "specification": spec,
+            "epsilon": eps,
+            "MAD_mg_dL": mad_cc,
+            "spearman_rho": float(rho_cc),
+            "target_correlation_r": float(r_target_cc),
+            "pct_within_5mg_dL": pct5_cc,
+            "pct_within_10mg_dL": pct10_cc,
+            "fallback_count": fallback_cc,
+            "fallback_rate_pct": float(fallback_cc / len(rec_cc) * 100.0),
+            "pct_rows_closer_to_file": cc_wins
+        })
+        
+        # Control A: Honest (unconditioned) vs RLTR file (evaluated at eps=0.15 and 0.25)
+        if eps in [0.15, 0.25]:
+            mad_h = float(np.mean(np.abs(rec_honest - provided_rltr_ins)))
+            rho_h, _ = stats.spearmanr(rec_honest, provided_rltr_ins)
+            r_target_h, _ = stats.pearsonr(rec_honest, y_missing_ins)
+            pct5_h = float(np.mean(np.abs(rec_honest - provided_rltr_ins) <= 5.0) * 100.0)
+            pct10_h = float(np.mean(np.abs(rec_honest - provided_rltr_ins) <= 10.0) * 100.0)
             
-    rec_arr = np.array(reconstructed)
-    mad = float(np.mean(np.abs(rec_arr - provided_rltr_ins)))
-    rho, rho_p = stats.spearmanr(rec_arr, provided_rltr_ins)
-    r_target, _ = stats.pearsonr(rec_arr, y_missing_ins)
-    pct_5 = float(np.mean(np.abs(rec_arr - provided_rltr_ins) <= 5.0) * 100.0)
-    pct_10 = float(np.mean(np.abs(rec_arr - provided_rltr_ins) <= 10.0) * 100.0)
-    fallback_rate = float(fallback_count / len(rec_arr) * 100.0)
-    
-    agreement_records.append({
-        "specification": "Relative_Difference",
-        "epsilon": eps,
-        "MAD_mg_dL": mad,
-        "spearman_rho": float(rho),
-        "target_correlation_r": float(r_target),
-        "pct_within_5mg_dL": pct_5,
-        "pct_within_10mg_dL": pct_10,
-        "fallback_count": fallback_count,
-        "fallback_rate_pct": fallback_rate
-    })
+            agreement_records.append({
+                "comparison": "Honest_Control_vs_RLTR_File",
+                "specification": spec,
+                "epsilon": eps,
+                "MAD_mg_dL": mad_h,
+                "spearman_rho": float(rho_h),
+                "target_correlation_r": float(r_target_h),
+                "pct_within_5mg_dL": pct5_h,
+                "pct_within_10mg_dL": pct10_h,
+                "fallback_count": fallback_h,
+                "fallback_rate_pct": float(fallback_h / len(rec_honest) * 100.0),
+                "pct_rows_closer_to_file": h_wins
+            })
+            
+            # Control B: Class-Conditional vs Honest Control
+            mad_cc_h = float(np.mean(np.abs(rec_cc - rec_honest)))
+            rho_cc_h, _ = stats.spearmanr(rec_cc, rec_honest)
+            pct5_cc_h = float(np.mean(np.abs(rec_cc - rec_honest) <= 5.0) * 100.0)
+            pct10_cc_h = float(np.mean(np.abs(rec_cc - rec_honest) <= 10.0) * 100.0)
+            
+            agreement_records.append({
+                "comparison": "Class_Conditional_vs_Honest_Control",
+                "specification": spec,
+                "epsilon": eps,
+                "MAD_mg_dL": mad_cc_h,
+                "spearman_rho": float(rho_cc_h),
+                "target_correlation_r": np.nan,
+                "pct_within_5mg_dL": pct5_cc_h,
+                "pct_within_10mg_dL": pct10_cc_h,
+                "fallback_count": np.nan,
+                "fallback_rate_pct": np.nan,
+                "pct_rows_closer_to_file": np.nan
+            })
 
 df_agreement = pd.DataFrame(agreement_records)
 df_agreement.to_csv("v3/results/E1_rltr_row_agreement.csv", index=False)
-print("Saved row-level agreement table to: v3/results/E1_rltr_row_agreement.csv")
+print("Saved complete row-level agreement and control table to: v3/results/E1_rltr_row_agreement.csv")
 
 print("\n" + "="*75)
 print("EXPERIMENT E1 COMPLETED SUCCESSFULLY")
 print("="*75)
+
