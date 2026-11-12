@@ -223,29 +223,46 @@ def mcnemar_exact(y_true, y_pred1, y_pred2):
 
 def compute_calibration_metrics(y_true, y_prob):
     """
-    Compute calibration slope and intercept via logistic regression:
-        logit(y) = intercept + slope * logit(p)
-    Clipped to avoid inf in logit.
+    Compute calibration slope and calibration-in-the-large intercept via unpenalized logistic regression:
+        1. Calibration Slope: logit(P(Y=1)) = alpha + beta * logit(p) -> beta is slope
+        2. Calibration Intercept (CITL): logit(P(Y=1)) = alpha_0 + 1.0 * logit(p) -> alpha_0 is intercept (slope fixed at 1 via offset)
+    Probabilities are clipped to [1e-6, 1 - 1e-6].
     Also returns Brier score.
     """
+    import statsmodels.api as sm
+    
     y_true = np.asarray(y_true, dtype=float)
     y_prob = np.asarray(y_prob, dtype=float)
     eps = 1e-6
     p_clipped = np.clip(y_prob, eps, 1.0 - eps)
     logit_p = np.log(p_clipped / (1.0 - p_clipped))
     
-    # Logistic regression of y on logit(p) unpenalized
+    brier = float(brier_score_loss(y_true, y_prob))
+    
+    # Check for single class or constant probabilities
+    if len(np.unique(y_true)) < 2:
+        return {
+            "calibration_slope": np.nan,
+            "calibration_intercept": np.nan,
+            "brier_score": brier
+        }
+        
     try:
-        from sklearn.linear_model import LogisticRegression
-        lr = LogisticRegression(C=1e9, solver='lbfgs', max_iter=200)
-        lr.fit(logit_p.reshape(-1, 1), y_true)
-        slope = float(lr.coef_[0][0])
-        intercept = float(lr.intercept_[0])
+        # 1. Unpenalized slope
+        X_slope = sm.add_constant(logit_p)
+        res_slope = sm.Logit(y_true, X_slope).fit(disp=False, maxiter=100)
+        slope = float(res_slope.params[1])
     except Exception:
         slope = np.nan
+        
+    try:
+        # 2. Calibration-in-the-large (intercept with slope fixed to 1.0 as offset)
+        X_const = np.ones((len(y_true), 1))
+        res_citl = sm.Logit(y_true, X_const, offset=logit_p).fit(disp=False, maxiter=100)
+        intercept = float(res_citl.params[0])
+    except Exception:
         intercept = np.nan
         
-    brier = float(brier_score_loss(y_true, y_prob))
     return {
         "calibration_slope": slope,
         "calibration_intercept": intercept,

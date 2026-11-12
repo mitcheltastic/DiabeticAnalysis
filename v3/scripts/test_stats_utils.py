@@ -68,11 +68,50 @@ def test_tost():
     assert res_equiv["equivalent"] is True, "Expected equivalence to be True!"
     print(f"  [PASS] Equivalence True case: mean_diff={res_equiv['mean_diff']:.4f}, p_tost={res_equiv['p_tost']:.4e}, equivalent={res_equiv['equivalent']}")
     
-    # Case 2: differences centered far from 0 (mean = 0.05, std = 0.01)
+    # Case 2: Realistic fold variance test (Amendment 1 Item C)
+    # SD of differences ~ 0.04, k=50, n_test/n_train = 1/9
+    np.random.seed(42)
+    sd_realistic = 0.04
+    d_realistic = np.random.normal(loc=0.002, scale=sd_realistic, size=k)
+    res_realistic = tost_equivalence(d_realistic, k, 1, 9, margin=margin, alpha=0.05)
+    
+    # Corrected SE should be sqrt((1/50 + 1/9) * sample_var)
+    sample_var = np.var(d_realistic, ddof=1)
+    expected_factor = (1.0 / 50.0) + (1.0 / 9.0)
+    expected_se = np.sqrt(expected_factor * sample_var)
+    assert np.isclose(res_realistic["se_corr"], expected_se), "Realistic SE mismatch!"
+    print(f"  [PASS] Realistic fold variance case (SD={sd_realistic}, k={k}): mean_diff={res_realistic['mean_diff']:.4f}, corrected_SE={res_realistic['se_corr']:.4f}, p_tost={res_realistic['p_tost']:.4f}, equivalent={res_realistic['equivalent']}")
+    
+    # Confirm 80/20 holdout ladder ratio
+    ladder_ratio = 154.0 / 614.0
+    assert np.isclose(ladder_ratio, 0.250814, atol=1e-5), "Ladder ratio mismatch!"
+    print(f"  [PASS] Confirmed 80/20 ladder ratio: 154/614 = {ladder_ratio:.6f}")
+
+    # Case 3: differences centered far from 0 (mean = 0.05, std = 0.01)
     d_nonequiv = np.random.normal(loc=0.05, scale=0.01, size=k)
     res_nonequiv = tost_equivalence(d_nonequiv, k, n_test, n_train, margin=margin, alpha=0.05)
     assert res_nonequiv["equivalent"] is False, "Expected equivalence to be False!"
     print(f"  [PASS] Equivalence False case: mean_diff={res_nonequiv['mean_diff']:.4f}, p_tost={res_nonequiv['p_tost']:.4f}, equivalent={res_nonequiv['equivalent']}")
+
+
+def test_calibration_unit():
+    print("\nTesting calibration slope and intercept with N=5000 Bernoulli(p) (Amendment 1 Item B)...")
+    np.random.seed(42)
+    n = 5000
+    p = np.random.uniform(0.1, 0.9, size=n)
+    y = np.random.binomial(1, p)
+    
+    from stats_utils import compute_calibration_metrics
+    cal = compute_calibration_metrics(y, p)
+    slope = cal["calibration_slope"]
+    intercept = cal["calibration_intercept"]
+    
+    print(f"  Fitted Slope: {slope:.4f} (target: 1.0 +- 0.1)")
+    print(f"  Fitted Intercept (CITL): {intercept:.4f} (target: 0.0 +- 0.1)")
+    
+    assert 0.90 <= slope <= 1.10, f"Slope {slope} outside [0.90, 1.10]!"
+    assert -0.10 <= intercept <= 0.10, f"Intercept {intercept} outside [-0.10, 0.10]!"
+    print("  [PASS] Calibration unit test passed within required tolerance.")
 
 
 def test_holm_bonferroni():
@@ -124,5 +163,7 @@ if __name__ == "__main__":
     test_tost()
     test_holm_bonferroni()
     test_mcnemar()
+    test_calibration_unit()
     test_metrics()
     print("\nALL UNIT TESTS PASSED SUCCESSFULLY!")
+
