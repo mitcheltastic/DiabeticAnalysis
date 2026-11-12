@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -33,8 +33,12 @@ def main():
     feature_names = list(X.columns)
     n_features = len(feature_names)
     
-    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    train_idx, test_idx = next(skf.split(X, y))
+    train_idx, test_idx = train_test_split(
+        np.arange(len(df_raw)),
+        test_size=0.20,
+        random_state=42,
+        stratify=y
+    )
     assert_disjoint(train_idx, test_idx)
     
     X_tr_raw = X.iloc[train_idx].copy().reset_index(drop=True)

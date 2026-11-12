@@ -4,7 +4,7 @@ import warnings
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedKFold, cross_val_predict
+from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedKFold, cross_val_predict, train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -204,8 +204,12 @@ def main():
     # PART 2: SEED 42 HOLDOUT EVALUATION (CLINICAL TEST BENCHMARK)
     # --------------------------------------------------------------------------
     print("\nRunning Seed 42 holdout evaluation (614 train / 154 test)...")
-    skf_seed42 = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    train_idx, test_idx = next(skf_seed42.split(X, y))
+    train_idx, test_idx = train_test_split(
+        np.arange(len(raw)),
+        test_size=0.20,
+        random_state=42,
+        stratify=y
+    )
     assert_disjoint(train_idx, test_idx)
     
     X_tr42 = X.iloc[train_idx].copy().reset_index(drop=True)
