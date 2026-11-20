@@ -111,15 +111,15 @@ Untuk memetakan bagaimana akurasi melonjak dari standar murni hingga angka fanta
 
 ### 2.2 Replikasi Presisi Baseline Paper Terdahulu (E2b)
 Melalui pembuktian matematis derivasi matriks konfusi unik (pada $N_{\text{test}}=154$, $N_0=100, N_1=54$):
-1. **Paper 1 (Fu'adah et al., Tabel II - XGBoost)**:
+1. **Paper 1 (Saputra et al., IEEE, Tabel II - XGBoost)**:
    - Nilai dilaporkan: Akurasi $85.06\%$, Presisi $0.80$, Recall $0.76$, Spesifisitas $0.90$, $F_1 = 0.78$.
    - **Hasil Model R3a RLTR Kita**: Akurasi **$85.0649\%$**, Matriks Konfusi **$\mathbf{TN=90, FP=10, FN=13, TP=41}$**.
    - **Status: TEREPLIKASI TEPAT SECARA DETERMINISTIK (Tier 1 Exact Match)**.
-2. **Paper 2 (Fu'adah et al., RLTR XGB+Optuna)**:
+2. **Paper 2 (Pratama et al., OPLIB Telkom, RLTR XGB+Optuna)**:
    - Nilai dilaporkan: Akurasi $87.01\%$, Weighted Precision $86.90\%$, Recall $87.01\%$, $F_1 = 86.89\%$.
    - **Hasil Model R4-50 Test-Tuned Kita**: Akurasi **$87.0130\%$**, Matriks Konfusi **$\mathbf{TN=92, FP=8, FN=12, TP=42}$**.
    - **Status: TEREPLIKASI TEPAT MELALUI TEST-SET TUNING (Tier 2 Consistent Match)**.
-3. **Paper 2 (Fu'adah et al., LTR XGB+Optuna)**:
+3. **Paper 2 (Pratama et al., OPLIB Telkom, LTR XGB+Optuna)**:
    - Nilai dilaporkan: Akurasi $77.27\%$, Weighted Precision $76.81\%$, Recall $77.27\%$, $F_1 = 76.87\%$.
    - **Hasil Model Honest Inner-CV Tuned LTR Kita**: Akurasi **$77.2727\%$**, Matriks Konfusi **$\mathbf{TN=86, FP=14, FN=21, TP=33}$**.
    - **Status: TEREPLIKASI TEPAT MELALUI HONEST CV TUNING**.
