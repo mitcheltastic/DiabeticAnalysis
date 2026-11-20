@@ -406,8 +406,8 @@ def build_pdf(filename="EXECUTIVE_SUMMARY_REPORT_V3.pdf"):
     story.append(t_e2)
     story.append(Spacer(1, 3))
     story.append(Paragraph(
-        "• <b>Bukti Replikasi Paper 1:</b> R3a RLTR mereplikasi exact angka Paper 1 Tabel II (XGBoost): Acc <b>85.06%</b>, Prec 0.80, Rec 0.76, Spec 0.90, F1 0.78, Matrix <b>(90, 10, 13, 41)</b>.<br/>"
-        "• <b>Bukti Replikasi Paper 2:</b> R4-50 Test-Tuned mereplikasi exact Paper 2 (RLTR XGB+Optuna): Acc <b>87.01%</b>, Prec 86.90%, Rec 87.01%, F1 86.89%, Matrix <b>(92, 8, 12, 42)</b>.<br/>"
+        "• <b>Bukti Replikasi Paper 1 (Saputra dkk.):</b> R3a RLTR mereplikasi exact angka Paper 1 Tabel II (XGBoost): Acc <b>85.06%</b>, Prec 0.80, Rec 0.76, Spec 0.90, F1 0.78, Matrix <b>(90, 10, 13, 41)</b>.<br/>"
+        "• <b>Bukti Replikasi Paper 2 (Pratama dkk.):</b> R4-50 Test-Tuned mereplikasi exact Paper 2 (RLTR XGB+Optuna): Acc <b>87.01%</b>, Prec 86.90%, Rec 87.01%, F1 86.89%, Matrix <b>(92, 8, 12, 42)</b>.<br/>"
         "• <b>Sensitivitas True Defaults:</b> Di bawah default asli xgboost 3.4 (lr=0.3), inflasi RLTR tetap masif: <b>+9.21 pp (p = 3.34e-9)</b> dan <b>+0.0981 AUC (p = 6.88e-12)</b>.",
         bullet_style
     ))
