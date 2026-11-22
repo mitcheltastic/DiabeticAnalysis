@@ -205,6 +205,7 @@ def main():
         palette=["#1f77b4", "#ff7f0e"]
     )
     plt.gca().invert_yaxis()
+    plt.xticks(rotation=25, ha='right', fontsize=10)
     plt.title("Feature Importance Rank Stability across 200 Bootstrap Refits (Rank 1 = Most Important)", fontsize=12, pad=12)
     plt.xlabel("Feature (Ordered by Final Model Median Rank)", fontsize=11)
     plt.ylabel("Assigned Rank (1 to 8)", fontsize=11)
@@ -219,43 +220,46 @@ def main():
     # --------------------------------------------------------------------------
     # VISUALIZATION 2: MEAN ABSOLUTE SHAP BAR COMPARISON WITH 95% CI
     # --------------------------------------------------------------------------
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharey=False)
     
-    df_res_lr_sorted = df_res.sort_values("lr_mean_abs_shap", ascending=True)
+    # Unified ordering: order by LR mean absolute SHAP ascending (so largest is at the top)
+    df_res_sorted = df_res.sort_values("lr_mean_abs_shap", ascending=True)
     y_pos = np.arange(n_features)
+    
+    # Panel 1: Logistic Regression
     axes[0].barh(
         y_pos,
-        df_res_lr_sorted["lr_mean_abs_shap"],
+        df_res_sorted["lr_mean_abs_shap"],
         xerr=[
-            df_res_lr_sorted["lr_mean_abs_shap"] - df_res_lr_sorted["lr_shap_ci_95_low"],
-            df_res_lr_sorted["lr_shap_ci_95_high"] - df_res_lr_sorted["lr_mean_abs_shap"]
+            df_res_sorted["lr_mean_abs_shap"] - df_res_sorted["lr_shap_ci_95_low"],
+            df_res_sorted["lr_shap_ci_95_high"] - df_res_sorted["lr_mean_abs_shap"]
         ],
         color="#1f77b4",
         alpha=0.85,
         capsize=4
     )
     axes[0].set_yticks(y_pos)
-    axes[0].set_yticklabels(df_res_lr_sorted["feature"], fontsize=10)
+    axes[0].set_yticklabels(df_res_sorted["feature"], fontsize=10)
     axes[0].set_xlabel("Mean |SHAP Value| (Impact on Log-Odds)", fontsize=11)
     axes[0].set_title("Final Model (LogReg-L2 Default)", fontsize=12)
     axes[0].grid(True, linestyle=":", alpha=0.6, axis="x")
     
-    df_res_xgb_sorted = df_res.sort_values("xgb_mean_abs_shap", ascending=True)
+    # Panel 2: Tuned XGBoost (using its own XGBoost values, explicitly aligned with df_res_sorted['feature'])
     axes[1].barh(
         y_pos,
-        df_res_xgb_sorted["xgb_mean_abs_shap"],
+        df_res_sorted["xgb_mean_abs_shap"],
         xerr=[
-            df_res_xgb_sorted["xgb_mean_abs_shap"] - df_res_xgb_sorted["xgb_shap_ci_95_low"],
-            df_res_xgb_sorted["xgb_shap_ci_95_high"] - df_res_xgb_sorted["xgb_mean_abs_shap"]
+            df_res_sorted["xgb_mean_abs_shap"] - df_res_sorted["xgb_shap_ci_95_low"],
+            df_res_sorted["xgb_shap_ci_95_high"] - df_res_sorted["xgb_mean_abs_shap"]
         ],
         color="#ff7f0e",
         alpha=0.85,
         capsize=4
     )
     axes[1].set_yticks(y_pos)
-    axes[1].set_yticklabels(df_res_xgb_sorted["feature"], fontsize=10)
+    axes[1].set_yticklabels(df_res_sorted["feature"], fontsize=10)
     axes[1].set_xlabel("Mean |SHAP Value| (Impact on Margin)", fontsize=11)
-    axes[1].set_title("Tuned XGBoost", fontsize=12)
+    axes[1].set_title("Tuned XGBoost (Aligned Feature Order)", fontsize=12)
     axes[1].grid(True, linestyle=":", alpha=0.6, axis="x")
     
     plt.suptitle("Feature Importance Comparison: 200 Bootstrap Refits on Seed 42 (95% CI Error Bars)", fontsize=13, y=0.98)

@@ -117,16 +117,17 @@ def main():
     # PART 2: TOP-K CUMULATIVE FEATURE ABLATION (100 SEEDS)
     # --------------------------------------------------------------------------
     print("\n--- Part 2: Running 100-Seed Top-K Cumulative Feature Ablation ---")
-    # Ranked features based on validated SHAP importance (E7 & E8 consensus)
+    # Ranked features strictly aligned with Official Final Model (LogReg-L2) Bootstrap Median Rank from E7:
+    # 1. Glucose, 2. BMI, 3. Pregnancies, 4. DiabetesPedigreeFunction, 5. Age, 6. Insulin, 7. BloodPressure, 8. SkinThickness
     ranked_features = [
         "Glucose",
         "BMI",
-        "Age",
         "Pregnancies",
         "DiabetesPedigreeFunction",
+        "Age",
         "Insulin",
-        "SkinThickness",
-        "BloodPressure"
+        "BloodPressure",
+        "SkinThickness"
     ]
     
     n_seeds = 100
@@ -241,7 +242,7 @@ def main():
     # PART 4: VISUALIZATION OF TOP-K ABLATION CURVES
     # --------------------------------------------------------------------------
     print("\n--- Part 4: Generating High-Resolution Publication Figure ---")
-    fig, axes = plt.subplots(1, 2, figsize=(15, 6), sharex=True)
+    fig, axes = plt.subplots(1, 2, figsize=(15, 6.5), sharex=True)
     
     palette = {"Logistic Regression (L2)": "#1f77b4", "Tuned XGBoost": "#ff7f0e"}
     
@@ -262,41 +263,41 @@ def main():
     # Styling Left Panel (Accuracy)
     axes[0].set_title("Test Accuracy vs. Top-k Features (100 Seeds, 95% CI Band)", fontsize=12, pad=12)
     axes[0].set_ylabel("Accuracy (%)", fontsize=11)
-    axes[0].set_xlabel("Number of Features Included (SHAP Order)", fontsize=11)
+    axes[0].set_xlabel("Number of Features Included (LogReg-L2 SHAP Order)", fontsize=11)
     axes[0].set_xticks(k_ticks)
-    axes[0].set_xticklabels(k_labels, fontsize=9)
-    axes[0].set_ylim(70, 82)
+    axes[0].set_xticklabels(k_labels, fontsize=9, rotation=20, ha='right')
+    axes[0].set_ylim(68, 83)
     axes[0].grid(True, linestyle=":", alpha=0.6)
     axes[0].legend(loc="lower right", fontsize=10)
     
     # Annotate Top-4 plateau
     axes[0].axvline(x=4, color="#2ca02c", linestyle="--", alpha=0.7)
     axes[0].annotate(
-        "Top-4 Parsimonious Plateau\n(Acc ~76.8%)",
-        xy=(4, 76.8), xytext=(4.2, 72.5),
+        "Top-4 Parsimonious Plateau\n(Acc ~76.6% - 76.8%)",
+        xy=(4, 76.6), xytext=(4.2, 70.5),
         arrowprops=dict(facecolor="#2ca02c", shrink=0.08, width=1.5, headwidth=6),
-        fontsize=9, color="#1e7123", fontweight="semibold"
+        fontsize=9, color="#1e7123", fontweight="bold"
     )
     
     # Styling Right Panel (ROC-AUC)
     axes[1].set_title("Test ROC-AUC vs. Top-k Features (100 Seeds, 95% CI Band)", fontsize=12, pad=12)
     axes[1].set_ylabel("ROC-AUC", fontsize=11)
-    axes[1].set_xlabel("Number of Features Included (SHAP Order)", fontsize=11)
+    axes[1].set_xlabel("Number of Features Included (LogReg-L2 SHAP Order)", fontsize=11)
     axes[1].set_xticks(k_ticks)
-    axes[1].set_xticklabels(k_labels, fontsize=9)
-    axes[1].set_ylim(0.74, 0.88)
+    axes[1].set_xticklabels(k_labels, fontsize=9, rotation=20, ha='right')
+    axes[1].set_ylim(0.70, 0.92)  # Expanded to prevent 95% CI upper band clipping
     axes[1].grid(True, linestyle=":", alpha=0.6)
     axes[1].legend(loc="lower right", fontsize=10)
     
     axes[1].axvline(x=4, color="#2ca02c", linestyle="--", alpha=0.7)
     axes[1].annotate(
-        "AUC Plateau (~0.838 - 0.840)\nRemaining 4 features add +0.001",
-        xy=(4, 0.839), xytext=(4.2, 0.765),
+        "AUC Plateau (~0.838 - 0.840)\nRemaining 4 features add negligible gain",
+        xy=(4, 0.839), xytext=(4.2, 0.730),
         arrowprops=dict(facecolor="#2ca02c", shrink=0.08, width=1.5, headwidth=6),
-        fontsize=9, color="#1e7123", fontweight="semibold"
+        fontsize=9, color="#1e7123", fontweight="bold"
     )
     
-    plt.suptitle("Clinical Parsimony: Impact of Incremental Feature Addition on Leak-Free Performance", fontsize=14, y=0.98)
+    plt.suptitle("Clinical Parsimony: Impact of Incremental Feature Addition on Leak-Free Performance", fontsize=13, y=0.98)
     plt.tight_layout()
     fig_ablation_path = "v3/figures/E8_topk_feature_ablation_curve.png"
     plt.savefig(fig_ablation_path, dpi=300, bbox_inches="tight")
