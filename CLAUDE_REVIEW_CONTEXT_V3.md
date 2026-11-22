@@ -68,10 +68,10 @@ Dekomposisi bertahap bagaimana akurasi bergerak dari baseline murni hingga angka
      $$\mathbf{TN=90, \ FP=10, \ FN=13, \ TP=41}$$  
      👉 **Akurasi dan matriks konfusi identik dengan Paper 1 (Saputra et al., IEEE, 2023, Tabel II)**.
 5. **R4-50 (Direct Test-Set Objective Tuning, 50 trials Optuna)**:  
-   - Rata-rata 100 split: **86.42% ± 2.21%**, naik $+10.61\text{ pp}$ ($p_{\text{NB}} = 8.16 \times 10^{-10}$).
+   - Rata-rata 100 split: **86.42% ± 2.21%** (naik $+2.73\text{ pp}$ di atas R3a, atau $+11.17\text{ pp}$ di atas baseline murni R0; $p_{\text{NB}} = 8.16 \times 10^{-10}$).
    - Pada **Seed 42**, akurasinya menghasilkan tepat **87.0130%** dengan matriks konfusi:  
      $$\mathbf{TN=92, \ FP=8, \ FN=12, \ TP=42}$$  
-     👉 **Konsisten dengan hasil optimasi Optuna pada Paper 2 (Pratama et al., OPLIB, 2024)**.
+     👉 **Akurasi identik dengan Paper 2 (Pratama et al., OPLIB, 2024)**.
 6. **R5 (Batas Atas Variabilitas Stokastik / Stochastic Upper Bound)**:  
    - Akurasi maksimum yang dapat dicapai di antara 100 split acak adalah **89.61% (138/154)** pada R3a (Seed 12), dan **90.91% (140/154)** pada R4 (pencarian 30 seed).  
    - *Catatan Metodologis*: Replikasi membuktikan bahwa studi terdahulu berakar pada Seed 42, bukan hasil cherry-picking seed. R5 dicantumkan murni sebagai demonstrasi batas atas variabilitas stokastik pada data uji berukuran kecil ($N_{\text{test}}=154$).
@@ -122,16 +122,19 @@ Dekomposisi bertahap bagaimana akurasi bergerak dari baseline murni hingga angka
   6. **Insulin**: Mean |SHAP| = **0.0902 (Median Rank: 6.0 dari 8 fitur)**
   7. **BloodPressure**: Mean |SHAP| = 0.0727
   8. **SkinThickness**: Mean |SHAP| = 0.0615
-- *Penjelasan Klinis Koefisien Insulin yang Negatif ($\beta = -0.069$)*: Pada model multivariat terkontrol, setelah mengontrol glukosa plasma yang sangat tinggi dan BMI obesitas, kadar insulin puasa yang relatif lebih rendah mencerminkan dekompensasi atau kelelahan sel beta pankreas (*beta-cell exhaustion*) pada diabetes tipe 2 lanjut, di mana kapasitas sekresi insulin mulai mengalami kegagalan.
+- *Penjelasan Klinis Koefisien Insulin yang Negatif ($\beta = -0.069$)*: Pada model multivariat terkontrol, setelah mengontrol glukosa plasma 2 jam OGTT yang sangat tinggi dan BMI obesitas, kadar insulin serum 2 jam yang relatif lebih rendah mencerminkan dekompensasi atau kelelahan sel beta pankreas (*beta-cell exhaustion/failure*) pada diabetes tipe 2 lanjut, di mana kapasitas sekresi kompensatori insulin mulai mengalami kegagalan.
 
 ### [E8] Kurva Ablasi Kumulatif Top-K (Temuan Parsimoni Parameter Klinis)
 Eksperimen penambahan fitur secara bertahap mengikuti urutan konsensus SHAP Model Akhir LogReg-L2 (100 seeds Monte Carlo):
-- **Top 1 (Glucose)**: Akurasi 73.99% (AUC 0.7863)
-- **Top 2 (+ BMI)**: Akurasi 76.10% (AUC 0.8179)
-- **Top 3 (+ Pregnancies)**: Akurasi 76.38% (AUC 0.8269)
-- **Top 4 (+ DiabetesPedigreeFunction)**: Akurasi **76.55% – 76.68% (AUC 0.8335 – 0.8400)** $\rightarrow$ **PLATO STATISTIK**
-- **Top 8 (Semua 8 Fitur Lengkap)**: Akurasi **76.60% (AUC 0.8369)**
-- **Temuan Klinis**: Menambahkan 4 fitur sisanya (terutama Insulin yang 49% missing dan SkinThickness yang 30% missing) hanya memberikan fluktuasi akurasi marginal ($\pm 0.3\%$). Skrining awal diabetes dapat dioptimalkan menggunakan parameter klinis rutin tanpa memerlukan tes laboratorium insulin puasa yang invasif dan mahal.
+- **Top 1 (Glucose)**: Akurasi 73.99% ± 2.69% (AUC 0.7863)
+- **Top 2 (+ BMI)**: Akurasi 76.10% ± 2.65% (AUC 0.8179)
+- **Top 3 (+ Pregnancies)**: Akurasi **76.66% ± 2.57% (AUC 0.8342)**
+- **Top 4 (+ DiabetesPedigreeFunction)**: Akurasi **76.56% ± 2.64% (AUC 0.8408)** $\rightarrow$ **PLATO STATISTIK**
+- **Top 5 (+ Age)**: Akurasi 76.77% ± 2.56% (AUC 0.8398)
+- **Top 6 (+ Insulin)**: Akurasi 76.97% ± 2.55% (AUC 0.8385)
+- **Top 7 (+ BloodPressure)**: Akurasi 76.71% ± 2.61% (AUC 0.8379)
+- **Top 8 (+ SkinThickness - Lengkap)**: Akurasi **76.60% ± 2.62% (AUC 0.8369)**
+- **Temuan Klinis**: Menambahkan 4 fitur sisanya (terutama Insulin serum 2 jam yang 49% missing dan SkinThickness yang 30% missing) hanya memberikan fluktuasi akurasi marginal ($\pm 0.3\%$). Skrining awal diabetes dapat dioptimalkan menggunakan parameter klinis rutin tanpa memerlukan tes laboratorium insulin serum 2 jam OGTT yang invasif dan berbiaya mahal.
 
 ---
 
