@@ -291,8 +291,8 @@ def main():
     
     axes[1].axvline(x=4, color="#2ca02c", linestyle="--", alpha=0.7)
     axes[1].annotate(
-        "AUC Plateau (~0.838 - 0.840)\nRemaining 4 features add negligible gain",
-        xy=(4, 0.839), xytext=(4.2, 0.730),
+        "AUC Peak / Plateau (~0.841)\nRemaining 4 features add negligible gain",
+        xy=(4, 0.8408), xytext=(4.2, 0.730),
         arrowprops=dict(facecolor="#2ca02c", shrink=0.08, width=1.5, headwidth=6),
         fontsize=9, color="#1e7123", fontweight="bold"
     )

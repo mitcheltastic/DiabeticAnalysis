@@ -144,7 +144,7 @@ Semua file gambar beresolusi tinggi (300 DPI) berada di folder `v3/figures/`:
 
 | No | Nama File Gambar | Deskripsi Visual & Perbaikan yang Diterapkan |
 | :---: | :--- | :--- |
-| 1 | `E2_inflation_ladder_waterfall.png` | **Barchart Tangga Inflasi**: Dekomposisi kenaikan performa dari baseline murni 75.25% $\rightarrow$ RLTR leak (+8.45 pp) $\rightarrow$ Test-tuned (+2.16 pp) $\rightarrow$ Batas atas stokastik R5 (90.91%). |
+| 1 | `E2_inflation_ladder_waterfall.png` | **Barchart Tangga Inflasi**: Dekomposisi kenaikan performa dari baseline murni 75.25% $\rightarrow$ RLTR leak (+8.45 pp) $\rightarrow$ Test-tuned (+2.73 pp) $\rightarrow$ Batas atas stokastik R5 (90.91%). |
 | 2 | `E5_decision_curve_analysis.png` | **Decision Curve Analysis (DCA)**: Kurva keuntungan klinis bersih (*net benefit*) model vs strategi *treat all* / *treat none*. |
 | 3 | `E5_reliability_diagram_seed42.png` | **Diagram Reliabilitas Kalibrasi**: Kurva probabilitas prediksi vs frekuensi observasi nyata (Brier score 0.1754, Slope 0.7608). |
 | 4 | `E7_feature_importance_ranks.png` | **Boxplot Stabilitas Peringkat Fitur**: Memperlihatkan kestabilan Glukosa (#1) dan BMI (#2) di 100% bootstrap refits (label sumbu x sudah dirotasi sehingga tidak bertumpuk). |
